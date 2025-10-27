@@ -6,7 +6,7 @@ import Home from "./pages/Home.jsx";
 import Productos from "./pages/Productos.jsx";
 import Contacto from "./pages/Contacto.jsx";
 import Carrito from "./pages/Carrito.jsx";
-import "./App.css"; // ✅ Estilos secundarios (efectos neón, tarjetas, botones)
+import "./App.css";
 
 function App() {
   return (
@@ -23,7 +23,7 @@ function App() {
       </Routes>
 
       {/* ⚡ Footer global */}
-      <footer className="text-center py-3">
+      <footer className="footer text-center py-3">
         © 2025 Level-Up Gamer. Todos los derechos reservados.
       </footer>
     </BrowserRouter>

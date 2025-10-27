@@ -1,12 +1,13 @@
 /* ============================================================
-🎮 ESTILOS GLOBALES PARA LEVEL-UP GAMER
+🎮 ESTILOS GLOBALES LEVEL-UP GAMER (versión final optimizada)
 ============================================================ */
 :root {
   --color-bg: #000000;
-  --color-text: #e0e0e0;
+  --color-text: #e8e8e8;
   --color-accent-green: #39ff14;
-  --color-accent-blue: #1e90ff;
-  --color-card: #111;
+  --color-accent-purple: #8f00ff;
+  --color-card: #101010;
+  --nav-h: 64px;
 }
 
 /* ============================================================
@@ -16,53 +17,52 @@ html, body {
   margin: 0;
   padding: 0;
   min-height: 100%;
-  background: radial-gradient(circle at center, #000000 0%, #0b0f1a 40%, #00111f 100%) !important;
+  background: radial-gradient(circle at center, #000000 0%, #0a0f0a 45%, #050505 100%) !important;
   background-attachment: fixed;
-  color: #e0e0e0 !important;
+  color: var(--color-text) !important;
   font-family: 'Poppins', sans-serif;
 }
 
-
 /* ============================================================
-💡 TEXTOS Y EFECTOS NEÓN
+💡 EFECTOS DE TEXTO NEÓN
 ============================================================ */
 .text-neon-green {
   color: var(--color-accent-green);
   text-shadow: 0 0 10px var(--color-accent-green),
-               0 0 20px var(--color-accent-blue);
+               0 0 20px var(--color-accent-purple);
 }
 
 /* ============================================================
-🔳 TARJETAS
+🔳 TARJETAS Y ELEMENTOS
 ============================================================ */
 .card {
   background-color: var(--color-card);
   color: var(--color-text);
   border: 1px solid rgba(57, 255, 20, 0.3);
   border-radius: 10px;
-  box-shadow: 0 0 10px rgba(57, 255, 20, 0.1);
+  box-shadow: 0 0 15px rgba(57, 255, 20, 0.1);
   transition: all 0.3s ease;
 }
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
+  box-shadow: 0 0 20px rgba(143, 0, 255, 0.3);
 }
 
 /* ============================================================
 🧮 BOTONES
 ============================================================ */
 button, .btn {
-  background-color: var(--color-accent-blue);
-  color: #fff;
+  background-color: var(--color-accent-green);
+  color: #000;
   border: none;
   border-radius: 8px;
   transition: all 0.3s ease;
 }
 
 button:hover, .btn:hover {
-  background-color: var(--color-accent-green);
-  color: #000;
+  background-color: var(--color-accent-purple);
+  color: #fff;
   box-shadow: 0 0 15px var(--color-accent-green);
 }
 
@@ -83,38 +83,123 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* ============================================================
-⚡ FOOTER
+⚡ FOOTER BASE
 ============================================================ */
 footer {
-  background-color: #0d0d0d;
+  background-color: #050505;
   border-top: 1px solid rgba(57, 255, 20, 0.2);
   color: #777;
 }
 
-/* ====== NAVBAR FIJA + ESTILO VIDRIO ====== */
-:root { --nav-h: 64px; }
-
+/* ============================================================
+🧭 NAVBAR EFECTO VIDRIO
+============================================================ */
 .site-header {
-  position: sticky;       /* se queda arriba al hacer scroll */
+  position: sticky;
   top: 0;
   z-index: 1030;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(6px);
-  border-bottom: 1px solid rgba(57, 255, 20, 0.12);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(57, 255, 20, 0.2);
 }
 
-/* Sutileza al item activo del nav */
 .nav-link-active {
-  text-shadow: 0 0 10px #39ff14, 0 0 20px #1e90ff;
+  text-shadow: 0 0 10px var(--color-accent-green),
+               0 0 20px var(--color-accent-purple);
 }
 
-/* ====== HERO FULL ALTO CON GRADIENTE OSCURO ====== */
+/* ============================================================
+🦸 HERO SECCIÓN PRINCIPAL
+============================================================ */
 .hero {
   min-height: calc(100vh - var(--nav-h));
-  background:
-    radial-gradient(1000px 600px at 50% 10%, rgba(57,255,20,0.08), transparent 60%),
-    radial-gradient(800px 500px at 80% 20%, rgba(30,144,255,0.07), transparent 60%),
-    linear-gradient(#05080d, #0b0f16);
-  color: #e0e0e0;
-  padding: 4rem 0;
+  background: radial-gradient(800px 400px at 60% 15%, rgba(57,255,20,0.12), transparent 70%),
+              radial-gradient(600px 400px at 20% 20%, rgba(143,0,255,0.08), transparent 70%),
+              linear-gradient(#020202, #0a0f0a);
+  color: var(--color-text);
+  padding: 5rem 0;
+}
+
+/* ============================================================
+🎮 CONTENEDOR GLOBAL DE PÁGINAS
+============================================================ */
+.page-wrapper {
+  background: radial-gradient(circle at center, #000000 0%, #0a0f0a 40%, #050505 100%) !important;
+  background-attachment: fixed;
+  color: var(--color-text) !important;
+  min-height: 100vh;
+}
+
+/* ============================================================
+🔥 BOTÓN HERO PERSONALIZADO
+============================================================ */
+.btn-hero {
+  background: linear-gradient(90deg, #39ff14, #8f00ff);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  box-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
+  transition: all 0.3s ease;
+}
+
+.btn-hero:hover {
+  background: linear-gradient(90deg, #8f00ff, #39ff14);
+  color: #fff;
+  box-shadow: 0 0 25px rgba(143, 0, 255, 0.5);
+  transform: scale(1.05);
+}
+
+/* ============================================================
+⚡ FOOTER NEÓN GAMER
+============================================================ */
+footer.footer {
+  background: linear-gradient(180deg, #050505 0%, #000000 100%);
+  border-top: 1px solid rgba(57, 255, 20, 0.25);
+  color: #aaa;
+  box-shadow: 0 -2px 10px rgba(143, 0, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+footer.footer p {
+  margin: 0;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+}
+
+.social-link {
+  transition: all 0.3s ease;
+}
+
+.social-link:hover {
+  color: var(--color-accent-green) !important;
+  text-shadow: 0 0 10px var(--color-accent-green), 0 0 15px var(--color-accent-purple);
+  transform: translateY(-3px);
+}
+
+/* ============================================================
+🎯 FIX: COHERENCIA FINAL DE COLOR DE TEXTO (Bootstrap override)
+============================================================ */
+
+/* Forzar que todos los textos usen el color gamer global */
+body, main, section, div, p, small, span, label, .lead, .text-muted {
+  color: var(--color-text) !important;
+}
+
+/* Quitar el gris oscuro de Bootstrap */
+.text-muted, .text-secondary, .text-body, .text-body-secondary, .text-black-50 {
+  color: var(--color-text) !important;
+  opacity: 1 !important;
+}
+
+/* Enlaces coherentes */
+a, a:hover, a:focus {
+  color: var(--color-accent-green);
+  text-decoration: none;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+a:hover {
+  text-shadow: 0 0 8px var(--color-accent-green);
 }

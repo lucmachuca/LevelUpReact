@@ -18,7 +18,7 @@ const Productos = () => {
   });
 
   return (
-    <div className="bg-dark text-light min-vh-100 d-flex flex-column">
+    <div className="page-wrapper min-vh-100 d-flex flex-column">
       <header className="text-center py-5">
         <h1 className="display-5 fw-bold text-neon-green glow-text">
           🕹️ Catálogo de Productos

@@ -8,7 +8,7 @@ import "../App.css";
 
 const Home = () => {
   return (
-    <div className="bg-dark text-light min-vh-100 d-flex flex-column">
+    <div className="page-wrapper min-vh-100 d-flex flex-column">
       <Hero />
 
       <main className="flex-grow-1">
