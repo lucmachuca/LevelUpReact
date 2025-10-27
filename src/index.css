@@ -143,3 +143,28 @@ footer {
   border-color: #1e90ff;
   box-shadow: 0 0 5px #1e90ff;
 }
+
+/* Efecto neón verde para Navbar */
+.text-neon-green {
+  color: #39ff14 !important;
+  text-shadow: 0 0 10px #39ff14, 0 0 20px #1e90ff;
+}
+
+.navbar-nav .nav-link {
+  transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #39ff14 !important;
+}
+
+.form-control:focus {
+  box-shadow: 0 0 10px #39ff14;
+  border-color: #39ff14;
+}
+
+.alert-success {
+  background-color: #052d05;
+  color: #39ff14;
+  border: 1px solid #39ff14;
+}
