@@ -1,11 +1,20 @@
+/* ==== Estilos base para Level-Up Gamer ==== */
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Roboto', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* Paleta de colores gamer */
+  --color-bg: #000000;
+  --color-text: #ffffff;
+  --color-accent-blue: #1E90FF;
+  --color-accent-green: #39FF14;
+  --color-muted: #d3d3d3;
+
+  color-scheme: dark;
+  color: var(--color-text);
+  background-color: var(--color-bg);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -13,56 +22,108 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ==== Enlaces ==== */
 a {
   font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+  color: var(--color-accent-blue);
+  text-decoration: none;
+  transition: color 0.3s ease;
 }
 a:hover {
-  color: #535bf2;
+  color: var(--color-accent-green);
 }
 
+/* ==== Cuerpo principal ==== */
 body {
   margin: 0;
   display: flex;
-  place-items: center;
+  flex-direction: column;
   min-width: 320px;
   min-height: 100vh;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* ==== Títulos ==== */
+h1, h2, h3, h4, h5 {
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 1px;
 }
 
 h1 {
-  font-size: 3.2em;
+  font-size: 3rem;
+  color: var(--color-accent-green);
   line-height: 1.1;
 }
 
+/* ==== Botones ==== */
 button {
   border-radius: 8px;
-  border: 1px solid transparent;
+  border: 2px solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  color: var(--color-text);
+  background-color: var(--color-accent-blue);
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  transition: all 0.25s ease-in-out;
 }
 
+button:hover {
+  background-color: var(--color-accent-green);
+  color: #000;
+  transform: scale(1.05);
+}
+
+button:focus,
+button:focus-visible {
+  outline: 3px solid var(--color-accent-green);
+}
+
+/* ==== Clases reutilizables ==== */
+.text-neon-green {
+  color: var(--color-accent-green);
+}
+
+.text-electric-blue {
+  color: var(--color-accent-blue);
+}
+
+.card {
+  border-radius: 12px;
+  background-color: #111;
+  color: var(--color-text);
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
+}
+
+/* ==== Footer ==== */
+footer {
+  margin-top: auto;
+  background-color: #111;
+  text-align: center;
+  padding: 1rem;
+  color: var(--color-muted);
+}
+
+/* ==== Modo claro (opcional para compatibilidad con preferencia del sistema) ==== */
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
+    color-scheme: light;
     background-color: #ffffff;
+    color: #213547;
   }
-  a:hover {
-    color: #747bff;
+  body {
+    background-color: #ffffff;
+    color: #213547;
   }
   button {
-    background-color: #f9f9f9;
+    background-color: var(--color-accent-blue);
+    color: #fff;
   }
 }
