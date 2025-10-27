@@ -1,179 +1,87 @@
-/* ==== Estilos base para Level-Up Gamer ==== */
-
+/* ============================================================
+🎮 ESTILOS GLOBALES PARA LEVEL-UP GAMER
+============================================================ */
 :root {
-  font-family: 'Roboto', system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  /* Paleta de colores gamer */
   --color-bg: #000000;
-  --color-text: #ffffff;
-  --color-accent-blue: #1E90FF;
-  --color-accent-green: #39FF14;
-  --color-muted: #d3d3d3;
-
-  color-scheme: dark;
-  color: var(--color-text);
-  background-color: var(--color-bg);
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --color-text: #e0e0e0;
+  --color-accent-green: #39ff14;
+  --color-accent-blue: #1e90ff;
+  --color-card: #111;
 }
 
-/* ==== Enlaces ==== */
-a {
-  font-weight: 500;
-  color: var(--color-accent-blue);
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-a:hover {
-  color: var(--color-accent-green);
-}
-
-/* ==== Cuerpo principal ==== */
-body {
+html, body {
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  min-width: 320px;
-  min-height: 100vh;
+  padding: 0;
   background-color: var(--color-bg);
   color: var(--color-text);
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
 }
 
-/* ==== Títulos ==== */
-h1, h2, h3, h4, h5 {
-  font-family: 'Orbitron', sans-serif;
-  letter-spacing: 1px;
-}
-
-h1 {
-  font-size: 3rem;
-  color: var(--color-accent-green);
-  line-height: 1.1;
-}
-
-/* ==== Botones ==== */
-button {
-  border-radius: 8px;
-  border: 2px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  color: var(--color-text);
-  background-color: var(--color-accent-blue);
-  cursor: pointer;
-  transition: all 0.25s ease-in-out;
-}
-
-button:hover {
-  background-color: var(--color-accent-green);
-  color: #000;
-  transform: scale(1.05);
-}
-
-button:focus,
-button:focus-visible {
-  outline: 3px solid var(--color-accent-green);
-}
-
-/* ==== Clases reutilizables ==== */
+/* ============================================================
+💡 TEXTOS Y EFECTOS NEÓN
+============================================================ */
 .text-neon-green {
   color: var(--color-accent-green);
+  text-shadow: 0 0 10px var(--color-accent-green),
+               0 0 20px var(--color-accent-blue);
 }
 
-.text-electric-blue {
-  color: var(--color-accent-blue);
-}
-
+/* ============================================================
+🔳 TARJETAS
+============================================================ */
 .card {
-  border-radius: 12px;
-  background-color: #111;
+  background-color: var(--color-card);
   color: var(--color-text);
-  transition: transform 0.3s ease;
+  border: 1px solid rgba(57, 255, 20, 0.3);
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(57, 255, 20, 0.1);
+  transition: all 0.3s ease;
 }
 
 .card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-5px);
   box-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
 }
 
-/* ==== Footer ==== */
-footer {
-  margin-top: auto;
-  background-color: #111;
-  text-align: center;
-  padding: 1rem;
-  color: var(--color-muted);
-}
-
-/* ==== Modo claro (opcional para compatibilidad con preferencia del sistema) ==== */
-@media (prefers-color-scheme: light) {
-  :root {
-    color-scheme: light;
-    background-color: #ffffff;
-    color: #213547;
-  }
-  body {
-    background-color: #ffffff;
-    color: #213547;
-  }
-  button {
-    background-color: var(--color-accent-blue);
-    color: #fff;
-  }
-}
-
-/* 🔥 Estilos para la vista Productos */
-.form-control,
-.form-select {
-  background-color: #1a1a1a;
-  color: #ffffff;
-  border: 1px solid #39ff14;
+/* ============================================================
+🧮 BOTONES
+============================================================ */
+button, .btn {
+  background-color: var(--color-accent-blue);
+  color: #fff;
+  border: none;
   border-radius: 8px;
-  transition: 0.3s ease;
+  transition: all 0.3s ease;
 }
 
-.form-control:focus,
-.form-select:focus {
-  border-color: #1e90ff;
-  box-shadow: 0 0 5px #1e90ff;
+button:hover, .btn:hover {
+  background-color: var(--color-accent-green);
+  color: #000;
+  box-shadow: 0 0 15px var(--color-accent-green);
 }
 
-/* Efecto neón verde para Navbar */
-.text-neon-green {
-  color: #39ff14 !important;
-  text-shadow: 0 0 10px #39ff14, 0 0 20px #1e90ff;
+/* ============================================================
+🧾 FORMULARIOS
+============================================================ */
+input, select, textarea {
+  background-color: #111;
+  color: #fff;
+  border: 1px solid var(--color-accent-green);
+  border-radius: 8px;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
-.navbar-nav .nav-link {
-  transition: color 0.3s ease;
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  box-shadow: 0 0 10px var(--color-accent-green);
 }
 
-.navbar-nav .nav-link:hover {
-  color: #39ff14 !important;
-}
-
-.form-control:focus {
-  box-shadow: 0 0 10px #39ff14;
-  border-color: #39ff14;
-}
-
-.alert-success {
-  background-color: #052d05;
-  color: #39ff14;
-  border: 1px solid #39ff14;
-}
-
-.table-dark th, .table-dark td {
-  vertical-align: middle;
-}
-
-.btn-outline-light:hover {
-  color: #39ff14 !important;
-  border-color: #39ff14 !important;
+/* ============================================================
+⚡ FOOTER
+============================================================ */
+footer {
+  background-color: #0d0d0d;
+  border-top: 1px solid rgba(57, 255, 20, 0.2);
+  color: #777;
 }
