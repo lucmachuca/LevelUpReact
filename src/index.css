@@ -168,3 +168,12 @@ footer {
   color: #39ff14;
   border: 1px solid #39ff14;
 }
+
+.table-dark th, .table-dark td {
+  vertical-align: middle;
+}
+
+.btn-outline-light:hover {
+  color: #39ff14 !important;
+  border-color: #39ff14 !important;
+}

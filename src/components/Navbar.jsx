@@ -56,6 +56,16 @@ const Navbar = () => {
               >
                 <i className="bi bi-envelope me-1"></i> Contacto
               </Link>
+              <li className="nav-item">
+              <Link
+                to="/carrito"
+                className={`nav-link ${
+                  location.pathname === "/carrito" ? "active text-neon-green" : ""
+                }`}
+              >
+                <i className="bi bi-cart3 me-1"></i> Carrito
+              </Link>
+            </li>
             </li>
           </ul>
         </div>
