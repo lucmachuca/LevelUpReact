@@ -6,7 +6,7 @@ import Home from "./pages/Home.jsx";
 import Productos from "./pages/Productos.jsx";
 import Contacto from "./pages/Contacto.jsx";
 import Carrito from "./pages/Carrito.jsx";
-import "./App.css"; // ✅ estilos secundarios (efectos neón, tarjetas, botones)
+import "./App.css"; // ✅ Estilos secundarios (efectos neón, tarjetas, botones)
 
 function App() {
   return (

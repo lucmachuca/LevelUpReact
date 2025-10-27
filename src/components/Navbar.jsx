@@ -8,13 +8,23 @@ const Navbar = () => {
   const location = useLocation();
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <nav
+      className="navbar navbar-expand-lg shadow-sm fixed-top"
+      style={{
+        background: "rgba(0, 0, 0, 0.8)",
+        backdropFilter: "blur(10px)",
+        borderBottom: "1px solid rgba(57, 255, 20, 0.2)",
+      }}
+    >
       <div className="container">
-        <Link className="navbar-brand fw-bold text-neon-green" to="/">
+        {/* LOGO / HOME */}
+        <Link className="navbar-brand fw-bold text-neon-green glow-text" to="/">
           🎮 Level-Up Gamer
         </Link>
+
+        {/* BOTÓN COLAPSABLE MOBILE */}
         <button
-          className="navbar-toggler"
+          className="navbar-toggler border-neon"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarNav"
@@ -25,48 +35,29 @@ const Navbar = () => {
           <span className="navbar-toggler-icon"></span>
         </button>
 
+        {/* LINKS */}
         <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto">
-            <li className="nav-item">
-              <Link
-                to="/"
-                className={`nav-link ${
-                  location.pathname === "/" ? "active text-neon-green" : ""
-                }`}
-              >
-                <i className="bi bi-house-door me-1"></i> Inicio
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link
-                to="/productos"
-                className={`nav-link ${
-                  location.pathname === "/productos" ? "active text-neon-green" : ""
-                }`}
-              >
-                <i className="bi bi-bag me-1"></i> Productos
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link
-                to="/contacto"
-                className={`nav-link ${
-                  location.pathname === "/contacto" ? "active text-neon-green" : ""
-                }`}
-              >
-                <i className="bi bi-envelope me-1"></i> Contacto
-              </Link>
-              <li className="nav-item">
-              <Link
-                to="/carrito"
-                className={`nav-link ${
-                  location.pathname === "/carrito" ? "active text-neon-green" : ""
-                }`}
-              >
-                <i className="bi bi-cart3 me-1"></i> Carrito
-              </Link>
-            </li>
-            </li>
+          <ul className="navbar-nav ms-auto text-center">
+            {[
+              { to: "/", icon: "house-door", label: "Inicio" },
+              { to: "/productos", icon: "bag", label: "Productos" },
+              { to: "/contacto", icon: "envelope", label: "Contacto" },
+              { to: "/carrito", icon: "cart3", label: "Carrito" },
+            ].map(({ to, icon, label }) => (
+              <li className="nav-item mx-2" key={to}>
+                <Link
+                  to={to}
+                  className={`nav-link fw-semibold ${
+                    location.pathname === to
+                      ? "text-neon-green glow-text"
+                      : "text-light"
+                  }`}
+                  style={{ transition: "color 0.3s ease" }}
+                >
+                  <i className={`bi bi-${icon} me-1`}></i> {label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
       </div>

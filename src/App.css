@@ -2,32 +2,31 @@
 ✨ EFECTOS SECUNDARIOS Y COMPONENTES
 ============================================================ */
 
-/* Efecto glow */
+/* 💫 Texto con brillo verde */
 .glow-text {
   text-shadow: 0 0 10px #39ff14, 0 0 20px #39ff14, 0 0 30px #1aff66;
 }
 
-/* Animación de rotación de logo */
+/* 🔁 Animación de rotación de logo */
 @keyframes logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
 
-/* Tarjetas (ajustes locales si se necesitan) */
+/* 🖼️ Tarjetas de producto */
 .card img {
   max-height: 180px;
   object-fit: contain;
-  background-color: #0a0a0a;
   border-radius: 10px;
 }
 
-/* Hover extra para botones secundarios */
+/* ✳️ Botones secundarios */
 .btn-outline-light {
   border-color: #39ff14;
   color: #39ff14;
+  transition: all 0.2s ease;
 }
 
 .btn-outline-light:hover {
-  background-color: #39ff14;
   color: #000;
 }
