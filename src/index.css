@@ -127,3 +127,19 @@ footer {
     color: #fff;
   }
 }
+
+/* 🔥 Estilos para la vista Productos */
+.form-control,
+.form-select {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border: 1px solid #39ff14;
+  border-radius: 8px;
+  transition: 0.3s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #1e90ff;
+  box-shadow: 0 0 5px #1e90ff;
+}
