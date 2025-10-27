@@ -1,67 +1,70 @@
-// src/components/Navbar.jsx
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 const Navbar = () => {
-  const location = useLocation();
+  const { pathname } = useLocation();
+
+  const isActive = (path) =>
+    pathname === path ? "text-neon-green nav-link-active" : "";
 
   return (
-    <nav
-      className="navbar navbar-expand-lg shadow-sm fixed-top"
-      style={{
-        background: "rgba(0, 0, 0, 0.8)",
-        backdropFilter: "blur(10px)",
-        borderBottom: "1px solid rgba(57, 255, 20, 0.2)",
-      }}
-    >
-      <div className="container">
-        {/* LOGO / HOME */}
-        <Link className="navbar-brand fw-bold text-neon-green glow-text" to="/">
-          🎮 Level-Up Gamer
-        </Link>
+    <header className="site-header">
+      <nav className="navbar navbar-expand-lg navbar-dark">
+        <div className="container">
+          <Link className="navbar-brand fw-bold text-neon-green" to="/">
+            🎮 Level-Up Gamer
+          </Link>
 
-        {/* BOTÓN COLAPSABLE MOBILE */}
-        <button
-          className="navbar-toggler border-neon"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
 
-        {/* LINKS */}
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto text-center">
-            {[
-              { to: "/", icon: "house-door", label: "Inicio" },
-              { to: "/productos", icon: "bag", label: "Productos" },
-              { to: "/contacto", icon: "envelope", label: "Contacto" },
-              { to: "/carrito", icon: "cart3", label: "Carrito" },
-            ].map(({ to, icon, label }) => (
-              <li className="nav-item mx-2" key={to}>
-                <Link
-                  to={to}
-                  className={`nav-link fw-semibold ${
-                    location.pathname === to
-                      ? "text-neon-green glow-text"
-                      : "text-light"
-                  }`}
-                  style={{ transition: "color 0.3s ease" }}
-                >
-                  <i className={`bi bi-${icon} me-1`}></i> {label}
+          <div className="collapse navbar-collapse" id="navbarNav">
+            <ul className="navbar-nav ms-auto gap-lg-2">
+              <li className="nav-item">
+                <Link className={`nav-link ${isActive("/")}`} to="/">
+                  <i className="bi bi-house-door me-1" /> Inicio
                 </Link>
               </li>
-            ))}
-          </ul>
+              <li className="nav-item">
+                <Link
+                  className={`nav-link ${isActive("/productos")}`}
+                  to="/productos"
+                >
+                  <i className="bi bi-bag me-1" /> Productos
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className={`nav-link ${isActive("/contacto")}`}
+                  to="/contacto"
+                >
+                  <i className="bi bi-envelope me-1" /> Contacto
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className={`nav-link ${isActive("/carrito")}`}
+                  to="/carrito"
+                >
+                  <i className="bi bi-cart3 me-1" /> Carrito
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </header>
   );
 };
 

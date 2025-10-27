@@ -90,3 +90,31 @@ footer {
   border-top: 1px solid rgba(57, 255, 20, 0.2);
   color: #777;
 }
+
+/* ====== NAVBAR FIJA + ESTILO VIDRIO ====== */
+:root { --nav-h: 64px; }
+
+.site-header {
+  position: sticky;       /* se queda arriba al hacer scroll */
+  top: 0;
+  z-index: 1030;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(57, 255, 20, 0.12);
+}
+
+/* Sutileza al item activo del nav */
+.nav-link-active {
+  text-shadow: 0 0 10px #39ff14, 0 0 20px #1e90ff;
+}
+
+/* ====== HERO FULL ALTO CON GRADIENTE OSCURO ====== */
+.hero {
+  min-height: calc(100vh - var(--nav-h));
+  background:
+    radial-gradient(1000px 600px at 50% 10%, rgba(57,255,20,0.08), transparent 60%),
+    radial-gradient(800px 500px at 80% 20%, rgba(30,144,255,0.07), transparent 60%),
+    linear-gradient(#05080d, #0b0f16);
+  color: #e0e0e0;
+  padding: 4rem 0;
+}

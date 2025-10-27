@@ -2,7 +2,6 @@
 import React from "react";
 import Hero from "../components/Hero";
 import ProductCard from "../components/ProductCard";
-import Footer from "../components/Footer";
 import productsData from "../data/productsData";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../App.css";
@@ -31,7 +30,6 @@ const Home = () => {
         </section>
       </main>
 
-      <Footer />
     </div>
   );
 };

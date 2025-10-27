@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import productsData from "../data/productsData";
 import ProductCard from "../components/ProductCard";
-import Footer from "../components/Footer";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../App.css";
 
@@ -67,8 +66,6 @@ const Productos = () => {
           </p>
         )}
       </main>
-
-      <Footer />
     </div>
   );
 };

@@ -1,6 +1,5 @@
 // src/pages/Carrito.jsx
 import React, { useState } from "react";
-import Footer from "../components/Footer";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../App.css";
 
@@ -124,8 +123,6 @@ const Carrito = () => {
           </>
         )}
       </main>
-
-      <Footer />
     </div>
   );
 };
