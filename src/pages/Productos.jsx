@@ -9,7 +9,16 @@ const Productos = () => {
   const [busqueda, setBusqueda] = useState("");
   const [categoria, setCategoria] = useState("Todos");
 
-  const categorias = ["Todos", ...new Set(productsData.map((p) => p.categoria))];
+  // 🔹 Lista fija de categorías ordenadas
+  const categorias = [
+    "Todos",
+    "Audio",
+    "Componentes",
+    "Consolas",
+    "Sillas",
+    "Pantallas",
+    "Periféricos"
+  ];
 
   const productosFiltrados = productsData.filter((p) => {
     const coincideCategoria = categoria === "Todos" || p.categoria === categoria;
@@ -23,11 +32,14 @@ const Productos = () => {
         <h1 className="display-5 fw-bold text-neon-green glow-text">
           🕹️ Catálogo de Productos
         </h1>
-        <p className="text-muted">Encuentra el mejor equipo para potenciar tu experiencia gamer.</p>
+        <p className="text-light opacity-75">
+          Encuentra el mejor equipo para potenciar tu experiencia gamer.
+        </p>
       </header>
 
       <main className="container flex-grow-1 mb-5">
         <div className="row justify-content-center mb-4">
+          {/* 🔍 Buscador */}
           <div className="col-12 col-md-6 mb-3">
             <input
               type="text"
@@ -37,6 +49,8 @@ const Productos = () => {
               onChange={(e) => setBusqueda(e.target.value)}
             />
           </div>
+
+          {/* 🔽 Selector de categoría */}
           <div className="col-12 col-md-4 mb-3">
             <select
               className="form-select text-light bg-dark border-neon"
@@ -52,6 +66,7 @@ const Productos = () => {
           </div>
         </div>
 
+        {/* 🧱 Listado de productos */}
         {productosFiltrados.length > 0 ? (
           <div className="row g-4 justify-content-center">
             {productosFiltrados.map((producto) => (
