@@ -1,68 +1,223 @@
+/* ============================================================
+🎮 ESTILOS GLOBALES LEVEL-UP GAMER (versión final optimizada)
+============================================================ */
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --color-bg: #000000;
+  --color-text: #e8e8e8;
+  --color-accent-green: #39ff14;
+  --color-accent-purple: #8f00ff;
+  --color-card: #101010;
+  --nav-h: 64px;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
+/* ============================================================
+🎮 FONDO GLOBAL GAMER — FORZADO SOBRE BOOTSTRAP
+============================================================ */
+html, body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+  padding: 0;
+  min-height: 100%;
+  background: radial-gradient(circle at center, #000000 0%, #0a0f0a 45%, #050505 100%) !important;
+  background-attachment: fixed;
+  color: var(--color-text) !important;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ============================================================
+💡 EFECTOS DE TEXTO NEÓN
+============================================================ */
+.text-neon-green {
+  color: var(--color-accent-green);
+  text-shadow: 0 0 10px var(--color-accent-green),
+               0 0 20px var(--color-accent-purple);
+}
+
+/* ============================================================
+🔳 TARJETAS Y ELEMENTOS
+============================================================ */
+.card {
+  background-color: var(--color-card);
+  color: var(--color-text);
+  border: 1px solid rgba(57, 255, 20, 0.3);
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(57, 255, 20, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* ============================================================
+🧮 BOTONES (centralizados)
+============================================================ */
+
+/* Botón base sólido */
+button, .btn {
+  background-color: var(--color-accent-green);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+button:hover, .btn:hover {
+  background-color: var(--color-accent-purple);
+  color: #fff;
+  box-shadow: 0 0 15px var(--color-accent-green);
+}
+
+/* Variante contorneada */
+.btn-outline-light {
+  border: 1px solid var(--color-accent-green);
+  color: var(--color-accent-green);
+  background: transparent;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-light:hover {
+  background-color: var(--color-accent-green);
+  color: #000;
+  box-shadow: 0 0 15px var(--color-accent-green);
+}
+
+/* ============================================================
+🧾 FORMULARIOS
+============================================================ */
+input, select, textarea {
+  background-color: #111;
+  color: #fff;
+  border: 1px solid var(--color-accent-green);
+  border-radius: 8px;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  box-shadow: 0 0 10px var(--color-accent-green);
+}
+
+/* ============================================================
+⚡ FOOTER BASE
+============================================================ */
+footer {
+  background-color: #050505;
+  border-top: 1px solid rgba(57, 255, 20, 0.2);
+  color: #777;
+}
+
+/* ============================================================
+🧭 NAVBAR EFECTO VIDRIO
+============================================================ */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(57, 255, 20, 0.2);
+}
+
+.nav-link-active {
+  text-shadow: 0 0 10px var(--color-accent-green),
+               0 0 20px var(--color-accent-purple);
+}
+
+/* ============================================================
+🦸 HERO SECCIÓN PRINCIPAL
+============================================================ */
+.hero {
+  min-height: calc(100vh - var(--nav-h));
+  background: radial-gradient(800px 400px at 60% 15%, rgba(57,255,20,0.12), transparent 70%),
+              radial-gradient(600px 400px at 20% 20%, rgba(143,0,255,0.08), transparent 70%),
+              linear-gradient(#020202, #0a0f0a);
+  color: var(--color-text);
+  padding: 5rem 0;
+}
+
+/* ============================================================
+🎮 CONTENEDOR GLOBAL DE PÁGINAS
+============================================================ */
+.page-wrapper {
+  background: radial-gradient(circle at center, #000000 0%, #0a0f0a 40%, #050505 100%) !important;
+  background-attachment: fixed;
+  color: var(--color-text) !important;
   min-height: 100vh;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* ============================================================
+🔥 BOTÓN HERO PERSONALIZADO
+============================================================ */
+.btn-hero {
+  background: linear-gradient(90deg, #39ff14, #8f00ff);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  box-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
+  transition: all 0.3s ease;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+.btn-hero:hover {
+  background: linear-gradient(90deg, #8f00ff, #39ff14);
+  color: #fff;
+  box-shadow: 0 0 25px rgba(143, 0, 255, 0.5);
+  transform: scale(1.05);
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+/* ============================================================
+⚡ FOOTER NEÓN GAMER
+============================================================ */
+footer.footer {
+  background: linear-gradient(180deg, #050505 0%, #000000 100%);
+  border-top: 1px solid rgba(57, 255, 20, 0.25);
+  color: #aaa;
+  box-shadow: 0 -2px 10px rgba(143, 0, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+footer.footer p {
+  margin: 0;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+}
+
+.social-link {
+  transition: all 0.3s ease;
+}
+
+.social-link:hover {
+  color: var(--color-accent-green) !important;
+  text-shadow: 0 0 10px var(--color-accent-green), 0 0 15px var(--color-accent-purple);
+  transform: translateY(-3px);
+}
+
+/* ============================================================
+🎯 COHERENCIA GLOBAL DE COLOR Y TEXTOS
+============================================================ */
+body, main, section, div, p, small, span, label, .lead, .text-muted {
+  color: var(--color-text) !important;
+}
+
+.text-muted, .text-secondary, .text-body, .text-body-secondary, .text-black-50 {
+  color: var(--color-text) !important;
+  opacity: 1 !important;
+}
+
+/* Enlaces coherentes */
+a, a:hover, a:focus {
+  color: var(--color-accent-green);
+  text-decoration: none;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+a:hover {
+  text-shadow: 0 0 8px var(--color-accent-green);
+}
+
+/* Select con borde neón */
+.border-neon {
+  border: 1px solid rgba(57, 255, 20, 0.5);
+  box-shadow: 0 0 6px rgba(57, 255, 20, 0.2);
+}
+.border-neon:focus {
+  border-color: var(--color-accent-green);
+  box-shadow: 0 0 10px var(--color-accent-green);
 }
