@@ -6,6 +6,7 @@ import Home from "./pages/Home.jsx";
 import Productos from "./pages/Productos.jsx";
 import Contacto from "./pages/Contacto.jsx";
 import Carrito from "./pages/Carrito.jsx";
+import ProductoDetalle from "./pages/ProductoDetalle";
 import "./App.css";
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/productos" element={<Productos />} />
+        <Route path="/productos/:id" element={<ProductoDetalle />} />
         <Route path="/contacto" element={<Contacto />} />
         <Route path="/carrito" element={<Carrito />} />
       </Routes>
