@@ -1,77 +1,51 @@
-/* =============================================
-   PANEL ADMINISTRADOR
-   Estilo inspirado en la pauta y el tema gamer.
-   (Negro + Verde neón + Azul eléctrico)
-   ============================================= */
 
-/* ======== CONTENEDOR PRINCIPAL ======== */
-.admin-section {
-  background-color: #000;
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.admin-container {
+  background-color: #000; /* Fondo negro base */
   padding: 40px 20px;
   min-height: 100vh;
   font-family: "Segoe UI", sans-serif;
 }
 
-/* ======== ENCABEZADO ======== */
+/* ===== ENCABEZADO ===== */
 .admin-header h2 {
-  color: #39ff14; /* verde neón */
+  color: #39ff14; /* Verde neón */
   text-shadow: 0 0 10px #39ff14;
   font-weight: bold;
 }
 
 .admin-header p {
-  color: #1e90ff; /* azul eléctrico */
+  color: #1e90ff; /* Azul eléctrico */
   font-size: 1.1rem;
+  margin-top: 10px;
 }
 
-/* ======== BOTONES DE NAVEGACIÓN ======== */
-.btn-tab {
-  background: none;
-  border: 2px solid #1e90ff;
-  color: #1e90ff;
-  padding: 8px 16px;
-  margin: 0 10px;
-  border-radius: 6px;
-  transition: 0.3s;
-  font-weight: bold;
-}
-
-.btn-tab:hover,
-.btn-tab.active {
-  background: linear-gradient(90deg, #39ff14, #1e90ff);
-  color: #000;
-  box-shadow: 0 0 15px #39ff14;
-}
-
-/* ======== TABLA ======== */
-.admin-table-container {
-  margin-top: 20px;
-}
-
+/* ===== TABLA ===== */
 .table {
-  background-color: #0a0a0a;
-  border: 2px solid #1e90ff;
+  background-color: #0a0a0a; /* Fondo oscuro de tabla */
+  border: 2px solid #1e90ff; /* Borde azul eléctrico */
   border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 0 25px #1e90ff40;
+  box-shadow: 0 0 25px #1e90ff50;
 }
 
 .table th {
   color: #39ff14;
   font-weight: bold;
   background-color: #0d0d0d;
+  border-bottom: 2px solid #1e90ff;
 }
 
 .table td {
-  color: #e0e0e0;
+  color: #dcdcdc;
 }
 
 .table-hover tbody tr:hover {
   background-color: #111;
   box-shadow: inset 0 0 10px #39ff1440;
+  transition: 0.3s;
 }
 
-/* ======== BOTONES DE ACCIÓN ======== */
+/* ===== BOTÓN ELIMINAR ===== */
 .btn-delete {
   background: linear-gradient(90deg, #ff4444, #ff2222);
   color: #000;

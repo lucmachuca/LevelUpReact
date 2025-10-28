@@ -1,4 +1,3 @@
-// src/components/AdminTable.tsx
 import React from "react";
 
 interface Usuario {
@@ -11,82 +10,54 @@ interface Usuario {
 }
 
 interface Props {
-  titulo: string;
-  datos: Usuario[];
-  tipo: "usuarios" | "productos";
-  onDelete: (id: string) => void;
+  usuarios: Usuario[];
+  onDelete: (email: string) => void;
 }
 
 // =============================================
-// TABLA ADMINISTRADOR
+// COMPONENTE TABLA DE ADMINISTRADOR
 // =============================================
-// Cumple con Pauta N2: modularidad, claridad y reutilización
+// - Presenta los datos de los usuarios registrados.
+// - Permite eliminar un usuario mediante su correo electrónico.
+// - Cumple con la separación de responsabilidades de Pauta N2.
 // =============================================
 
-export default function AdminTable({ titulo, datos, tipo, onDelete }: Props) {
+export default function AdminTable({ usuarios, onDelete }: Props) {
   return (
-    <div className="admin-table-container">
-      <h4 className="mb-3">{titulo}</h4>
-      <div className="table-responsive">
-        <table className="table table-dark table-striped table-hover align-middle text-center">
-          <thead>
-            <tr>
-              {tipo === "usuarios" ? (
-                <>
-                  <th>Nombre</th>
-                  <th>Email</th>
-                  <th>Teléfono</th>
-                  <th>Región</th>
-                  <th>Comuna</th>
-                  <th>Descuento</th>
-                  <th>Acción</th>
-                </>
-              ) : (
-                <>
-                  <th>Producto</th>
-                  <th>Categoría</th>
-                  <th>Precio</th>
-                  <th>Stock</th>
-                  <th>Acción</th>
-                </>
-              )}
+    <div className="table-responsive mt-4">
+      <table className="table table-dark table-hover align-middle text-center">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Región</th>
+            <th>Comuna</th>
+            <th>Descuento</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {usuarios.map((u) => (
+            <tr key={u.email}>
+              <td>{u.nombre}</td>
+              <td>{u.email}</td>
+              <td>{u.telefono || "-"}</td>
+              <td>{u.region}</td>
+              <td>{u.comuna}</td>
+              <td>{u.descuento ? `${u.descuento}%` : "0%"}</td>
+              <td>
+                <button
+                  className="btn-delete"
+                  onClick={() => onDelete(u.email)}
+                >
+                  <i className="bi bi-trash"></i> Eliminar
+                </button>
+              </td>
             </tr>
-          </thead>
-
-          <tbody>
-            {datos.map((d: any, index: number) => (
-              <tr key={index}>
-                {tipo === "usuarios" ? (
-                  <>
-                    <td>{d.nombre}</td>
-                    <td>{d.email}</td>
-                    <td>{d.telefono || "-"}</td>
-                    <td>{d.region}</td>
-                    <td>{d.comuna}</td>
-                    <td>{d.descuento ? `${d.descuento}%` : "0%"}</td>
-                  </>
-                ) : (
-                  <>
-                    <td>{d.nombre}</td>
-                    <td>{d.categoria}</td>
-                    <td>${d.precio}</td>
-                    <td>{d.stock}</td>
-                  </>
-                )}
-
-                <td>
-                  <button
-                    className="btn-delete"
-                    onClick={() => onDelete(d.email || d.id)}
-                  >
-                    <i className="bi bi-trash"></i> Eliminar
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
