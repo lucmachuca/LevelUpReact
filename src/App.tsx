@@ -1,7 +1,8 @@
-// src/App.tsx
-import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
+import Footer from "./components/Footer.jsx";
+
+// === Páginas principales (Rodrigo) ===
 import Home from "./pages/Home.jsx";
 import Productos from "./pages/Productos.jsx";
 import ProductoDetalle from "./pages/ProductoDetalle.jsx";
@@ -12,14 +13,18 @@ import CompraExitosa from "./pages/CompraExitosa.jsx";
 import CompraFallida from "./pages/CompraFallida.jsx";
 
 // === Páginas de Luciano ===
-import LoginPage from "./pages/LoginPage.js";
-import RegistroPage from "./pages/RegistroPage.js";
-import PerfilUsuarioPage from "./pages/PerfilUsuarioPage.tsx";
+import LoginPage from "./pages/LoginPage.tsx";
+import RegistroPage from "./pages/RegistroPage.tsx";
 import AdminPage from "./pages/AdminPage.tsx";
+import PerfilUsuarioPage from "./pages/PerfilUsuarioPage.tsx";
 import HistorialComprasPage from "./pages/HistorialComprasPage.tsx";
 import BlogPage from "./pages/BlogPage.tsx";
 
+// === Estilos globales ===
 import "./App.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
+
 
 function App() {
   return (
