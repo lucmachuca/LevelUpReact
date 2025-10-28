@@ -1,11 +1,12 @@
 // src/main.tsx
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
-import { CarritoProvider } from "./context/CarritoContext";
+import App from "./App.tsx";
+import { CarritoProvider } from "./context/CarritoContext.tsx";
 import "./index.css";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+const root = document.getElementById("root") as HTMLElement;
+ReactDOM.createRoot(root).render(
   <React.StrictMode>
     <CarritoProvider>
       <App />

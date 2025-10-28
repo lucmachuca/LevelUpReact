@@ -12,8 +12,8 @@ import CompraExitosa from "./pages/CompraExitosa.jsx";
 import CompraFallida from "./pages/CompraFallida.jsx";
 
 // === Páginas de Luciano ===
-import LoginPage from "./pages/LoginPage.tsx";
-import RegistroPage from "./pages/RegistroPage.tsx";
+import LoginPage from "./pages/LoginPage.js";
+import RegistroPage from "./pages/RegistroPage.js";
 import PerfilUsuarioPage from "./pages/PerfilUsuarioPage.tsx";
 import AdminPage from "./pages/AdminPage.tsx";
 import HistorialComprasPage from "./pages/HistorialComprasPage.tsx";

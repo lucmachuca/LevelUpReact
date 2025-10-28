@@ -1,8 +1,8 @@
 import { useState } from "react";
 import React from "react";
-import { validarCamposLogin } from "../utils/ValidationLogin";
+import { validarCamposLogin } from "../utils/ValidationLogin.ts";
 import AlertMessage from "../components/AlertMessage";
-import "../assets/styles.css";
+import "../assets/styles/login.css";
 
 
 export default function LoginPage() {
