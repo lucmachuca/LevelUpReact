@@ -6,17 +6,28 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 const Navbar = () => {
   const { pathname } = useLocation();
 
+  const links = [
+    { path: "/", label: "Inicio", icon: "house-door" },
+    { path: "/productos", label: "Productos", icon: "bag" },
+    { path: "/contacto", label: "Contacto", icon: "envelope" },
+    { path: "/carrito", label: "Carrito", icon: "cart3" },
+    { path: "/login", label: "Login", icon: "person" },
+    { path: "/registro", label: "Registro", icon: "person-plus" },
+  ];
+
   const isActive = (path) =>
     pathname === path ? "text-neon-green nav-link-active" : "";
 
   return (
     <header className="site-header">
-      <nav className="navbar navbar-expand-lg navbar-dark">
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div className="container">
-          <Link className="navbar-brand fw-bold text-neon-green" to="/">
+          {/* LOGO */}
+          <Link className="navbar-brand fw-bold text-neon-green glow-text" to="/">
             🎮 Level-Up Gamer
           </Link>
 
+          {/* BOTÓN MÓVIL */}
           <button
             className="navbar-toggler"
             type="button"
@@ -29,37 +40,16 @@ const Navbar = () => {
             <span className="navbar-toggler-icon"></span>
           </button>
 
+          {/* LINKS */}
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto gap-lg-2">
-              <li className="nav-item">
-                <Link className={`nav-link ${isActive("/")}`} to="/">
-                  <i className="bi bi-house-door me-1" /> Inicio
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  className={`nav-link ${isActive("/productos")}`}
-                  to="/productos"
-                >
-                  <i className="bi bi-bag me-1" /> Productos
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  className={`nav-link ${isActive("/contacto")}`}
-                  to="/contacto"
-                >
-                  <i className="bi bi-envelope me-1" /> Contacto
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  className={`nav-link ${isActive("/carrito")}`}
-                  to="/carrito"
-                >
-                  <i className="bi bi-cart3 me-1" /> Carrito
-                </Link>
-              </li>
+              {links.map(({ path, label, icon }) => (
+                <li className="nav-item" key={path}>
+                  <Link className={`nav-link ${isActive(path)}`} to={path}>
+                    <i className={`bi bi-${icon} me-1`} /> {label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         </div>

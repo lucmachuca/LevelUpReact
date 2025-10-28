@@ -4,11 +4,17 @@ import "./index.css"; // <-- tus estilos globales DEBEN ir después
 
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App.tsx";
+import App from "./App";
+import { CarritoProvider } from "./context/CarritoContext";
+import "./index.css";
 
-createRoot(document.getElementById("root")!).render(
+const root = document.getElementById("root") as HTMLElement;
+createRoot(root).render(
   <StrictMode>
-    <App />
+    <CarritoProvider>
+      <App />
+    </CarritoProvider>
   </StrictMode>
 );
+
 
