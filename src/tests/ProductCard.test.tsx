@@ -1,4 +1,4 @@
-// src/tests/ProductCard.test.jsx
+/// <reference types="vitest" />
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import ProductCard from "../components/ProductCard";
@@ -35,6 +35,6 @@ describe("🧪 Prueba unitaria del componente ProductCard", () => {
     renderWithContext();
     const boton = screen.getByRole("button", { name: /agregar al carrito/i });
     fireEvent.click(boton);
-    expect(boton).toBeInTheDocument(); // comprobamos que el botón sigue visible
+    expect(boton).toBeInTheDocument();
   });
 });

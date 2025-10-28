@@ -1,10 +1,37 @@
-// src/context/CarritoContext.jsx
 import React, { createContext, useState, useEffect } from "react";
+import type { ReactNode } from "react";
 
-export const CarritoContext = createContext();
 
-export const CarritoProvider = ({ children }) => {
-  const [carrito, setCarrito] = useState(() => {
+// 📦 Tipo de producto
+export interface Producto {
+  id: number;
+  nombre: string;
+  categoria: string;
+  precio: number;
+  imagen?: string;
+  cantidad: number;
+}
+
+// 🧩 Tipo del contexto
+export interface CarritoContextType {
+  carrito: Producto[];
+  agregarAlCarrito: (producto: Producto) => void;
+  incrementarCantidad: (id: number) => void;
+  decrementarCantidad: (id: number) => void;
+  eliminarDelCarrito: (id: number) => void;
+  vaciarCarrito: () => void;
+  total: number;
+}
+
+// ✅ Creación del contexto
+export const CarritoContext = createContext<CarritoContextType | undefined>(undefined);
+
+interface CarritoProviderProps {
+  children: ReactNode;
+}
+
+export const CarritoProvider: React.FC<CarritoProviderProps> = ({ children }) => {
+  const [carrito, setCarrito] = useState<Producto[]>(() => {
     const saved = localStorage.getItem("carrito");
     return saved ? JSON.parse(saved) : [];
   });
@@ -13,7 +40,7 @@ export const CarritoProvider = ({ children }) => {
     localStorage.setItem("carrito", JSON.stringify(carrito));
   }, [carrito]);
 
-  const agregarAlCarrito = (producto) => {
+  const agregarAlCarrito = (producto: Producto) => {
     setCarrito((prev) => {
       const existe = prev.find((p) => p.id === producto.id);
       if (existe) {
@@ -25,21 +52,23 @@ export const CarritoProvider = ({ children }) => {
     });
   };
 
-  const incrementarCantidad = (id) => {
+  const incrementarCantidad = (id: number) => {
     setCarrito((prev) =>
       prev.map((p) => (p.id === id ? { ...p, cantidad: p.cantidad + 1 } : p))
     );
   };
 
-  const decrementarCantidad = (id) => {
+  const decrementarCantidad = (id: number) => {
     setCarrito((prev) =>
       prev
-        .map((p) => (p.id === id ? { ...p, cantidad: p.cantidad - 1 } : p))
+        .map((p) =>
+          p.id === id ? { ...p, cantidad: p.cantidad - 1 } : p
+        )
         .filter((p) => p.cantidad > 0)
     );
   };
 
-  const eliminarDelCarrito = (id) => {
+  const eliminarDelCarrito = (id: number) => {
     setCarrito((prev) => prev.filter((p) => p.id !== id));
   };
 
@@ -63,3 +92,5 @@ export const CarritoProvider = ({ children }) => {
     </CarritoContext.Provider>
   );
 };
+
+export type { CarritoContextType };

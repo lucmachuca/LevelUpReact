@@ -1,19 +1,19 @@
-// src/pages/Carrito.jsx
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { CarritoContext } from "../context/CarritoContext";
+import type { CarritoContextType } from "../context/CarritoContext";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "../App.css";
 
-const Carrito = () => {
+const Carrito: React.FC = () => {
+  const navigate = useNavigate();
   const {
     carrito,
     incrementarCantidad,
     decrementarCantidad,
     eliminarDelCarrito,
     total,
-  } = useContext(CarritoContext);
-
-  const navigate = useNavigate();
+  } = useContext(CarritoContext) as CarritoContextType;
 
   return (
     <div className="page-wrapper container py-5 text-center text-light">
@@ -24,7 +24,10 @@ const Carrito = () => {
       {carrito.length === 0 ? (
         <>
           <p className="text-muted fs-5">Tu carrito está vacío.</p>
-          <button className="btn btn-outline-light mt-3" onClick={() => navigate("/productos")}>
+          <button
+            className="btn btn-outline-light mt-3"
+            onClick={() => navigate("/productos")}
+          >
             🔙 Volver a productos
           </button>
         </>
@@ -49,7 +52,6 @@ const Carrito = () => {
                       ${item.precio.toLocaleString()}
                     </p>
 
-                    {/* Controles de cantidad */}
                     <div className="d-flex justify-content-center align-items-center gap-2 mb-3">
                       <button
                         className="btn btn-outline-light"
@@ -85,10 +87,16 @@ const Carrito = () => {
           </h3>
 
           <div className="d-flex justify-content-center gap-3">
-            <button className="btn btn-outline-light" onClick={() => navigate("/productos")}>
+            <button
+              className="btn btn-outline-light"
+              onClick={() => navigate("/productos")}
+            >
               🔙 Seguir comprando
             </button>
-            <button className="btn btn-hero" onClick={() => navigate("/checkout")}>
+            <button
+              className="btn btn-hero"
+              onClick={() => navigate("/checkout")}
+            >
               💳 Proceder al pago
             </button>
           </div>

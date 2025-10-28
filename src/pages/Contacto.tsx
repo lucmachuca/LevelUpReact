@@ -1,26 +1,33 @@
-// src/pages/Contacto.jsx
-import React, { useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useState, ChangeEvent, FormEvent } from "react";
 import "../App.css";
 
-const Contacto = () => {
-  const [formData, setFormData] = useState({
+interface FormData {
+  nombre: string;
+  correo: string;
+  mensaje: string;
+}
+
+const Contacto: React.FC = () => {
+  const [formData, setFormData] = useState<FormData>({
     nombre: "",
     correo: "",
     mensaje: "",
   });
-  const [enviado, setEnviado] = useState(false);
+  const [enviado, setEnviado] = useState<boolean>(false);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
+
     if (!formData.nombre || !formData.correo || !formData.mensaje) {
       alert("Por favor completa todos los campos antes de enviar.");
       return;
     }
+
     setEnviado(true);
     setTimeout(() => setEnviado(false), 3000);
     setFormData({ nombre: "", correo: "", mensaje: "" });
@@ -29,12 +36,9 @@ const Contacto = () => {
   return (
     <div className="page-wrapper min-vh-100 d-flex flex-column">
       <header className="text-center py-5">
-        <h1 className="display-5 fw-bold text-neon-green glow-text">
-          📩 Contáctanos
-        </h1>
+        <h1 className="display-5 fw-bold text-neon-green glow-text">📩 Contáctanos</h1>
         <p className="text-muted">
-          ¿Tienes dudas o sugerencias? Completa el formulario y te
-          responderemos pronto.
+          ¿Tienes dudas o sugerencias? Completa el formulario y te responderemos pronto.
         </p>
       </header>
 
@@ -57,9 +61,7 @@ const Contacto = () => {
           </div>
 
           <div className="mb-4">
-            <label className="form-label text-neon-green">
-              Correo electrónico
-            </label>
+            <label className="form-label text-neon-green">Correo electrónico</label>
             <input
               type="email"
               className="form-control text-light bg-dark border-neon"
@@ -75,17 +77,14 @@ const Contacto = () => {
             <textarea
               className="form-control text-light bg-dark border-neon"
               name="mensaje"
-              rows="4"
+              rows={4}
               value={formData.mensaje}
               onChange={handleChange}
               placeholder="Escribe tu mensaje..."
-            ></textarea>
+            />
           </div>
 
-          <button
-            type="submit"
-            className="btn btn-primary w-100 fw-bold py-2"
-          >
+          <button type="submit" className="btn btn-primary w-100 fw-bold py-2">
             Enviar mensaje
           </button>
 

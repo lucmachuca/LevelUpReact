@@ -1,4 +1,4 @@
-// src/tests/ProductoDetalle.test.jsx
+/// <reference types="vitest" />
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter, Route, Routes } from "react-router-dom";

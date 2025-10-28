@@ -1,12 +1,17 @@
-// src/components/ProductCard.jsx
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { CarritoContext } from "../context/CarritoContext";
-import "bootstrap/dist/css/bootstrap.min.css";
 
-const ProductCard = ({ producto }) => {
-  const { agregarAlCarrito } = useContext(CarritoContext);
+// 👇 importa el valor (contexto) y los tipos por separado
+import { CarritoContext } from "../context/CarritoContext";
+import type { CarritoContextType, Producto } from "../context/CarritoContext";
+
+interface ProductCardProps {
+  producto: Producto;
+}
+
+const ProductCard: React.FC<ProductCardProps> = ({ producto }) => {
   const navigate = useNavigate();
+  const { agregarAlCarrito } = useContext(CarritoContext) as CarritoContextType;
 
   return (
     <div className="card h-100 shadow bg-dark text-light border border-success">
@@ -15,13 +20,13 @@ const ProductCard = ({ producto }) => {
         alt={producto.nombre}
         className="card-img-top p-3 rounded"
         style={{ maxHeight: "200px", objectFit: "contain", cursor: "pointer" }}
-        onClick={() => navigate(`/productos/${producto.id}`)}
+        onClick={() => navigate(`/producto/${producto.id}`)}
       />
       <div className="card-body text-center">
         <h5
           className="card-title text-neon-green"
           style={{ cursor: "pointer" }}
-          onClick={() => navigate(`/productos/${producto.id}`)}
+          onClick={() => navigate(`/producto/${producto.id}`)}
         >
           {producto.nombre}
         </h5>
@@ -29,9 +34,6 @@ const ProductCard = ({ producto }) => {
         <p className="fw-bold text-success mb-2">
           ${producto.precio.toLocaleString()}
         </p>
-        {producto.descripcion && (
-          <p className="text-secondary small mb-3">{producto.descripcion}</p>
-        )}
         <button
           className="btn btn-outline-light mt-2"
           onClick={() => agregarAlCarrito(producto)}

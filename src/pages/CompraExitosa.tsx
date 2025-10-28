@@ -1,18 +1,30 @@
-// src/pages/CompraExitosa.jsx
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import "../App.css";
 
-const CompraExitosa = () => {
+interface LocationState {
+  total?: number;
+  orderId?: string;
+}
+
+const CompraExitosa: React.FC = () => {
   const navigate = useNavigate();
-  const { state } = useLocation() || {};
+  const { state } = useLocation() as { state: LocationState };
   const total = state?.total ?? 0;
   const orderId = state?.orderId ?? "LVL-000000";
 
   return (
     <div className="page-wrapper d-flex flex-column align-items-center justify-content-center text-center text-light py-5">
       <h1 className="text-neon-green display-4 mb-3">✅ ¡Compra exitosa!</h1>
-      <p className="fs-5">Tu pedido <strong>{orderId}</strong> fue procesado correctamente.</p>
-      <p className="mb-4">Total pagado: <strong className="text-neon-green">${total.toLocaleString()}</strong></p>
+      <p className="fs-5">
+        Tu pedido <strong>{orderId}</strong> fue procesado correctamente.
+      </p>
+      <p className="mb-4">
+        Total pagado:{" "}
+        <strong className="text-neon-green">
+          ${total.toLocaleString()}
+        </strong>
+      </p>
 
       <div className="d-flex gap-3">
         <button className="btn btn-hero" onClick={() => navigate("/productos")}>
