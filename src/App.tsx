@@ -5,14 +5,14 @@ import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 
 // 🔹 Páginas de Rodrigo
-import Home from "./pages/Home.tsx";
-import Productos from "./pages/Productos.tsx";
-import ProductoDetalle from "./pages/ProductoDetalle.tsx";
-import Checkout from "./pages/Checkout.tsx";
-import CompraFallida from "./pages/CompraFallida.tsx";
-import CompraExitosa from "./pages/CompraExitosa.tsx";
-import Contacto from "./pages/Contacto.tsx";
-import Carrito from "./pages/Carrito.tsx";
+import Home from "./pages/Home.jsx";
+import Productos from "./pages/Productos.jsx";
+import ProductoDetalle from "./pages/ProductoDetalle.jsx";
+import Checkout from "./pages/Checkout.jsx";
+import CompraFallida from "./pages/CompraFallida.jsx";
+import CompraExitosa from "./pages/CompraExitosa.jsx";
+import Contacto from "./pages/Contacto.jsx";
+import Carrito from "./pages/Carrito.jsx";
 
 // 🔹 Páginas de Luciano
 import LoginPage from "./pages/LoginPage";
