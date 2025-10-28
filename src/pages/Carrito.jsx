@@ -4,7 +4,14 @@ import { CarritoContext } from "../context/CarritoContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Carrito = () => {
-  const { carrito, eliminarDelCarrito, vaciarCarrito, total } = useContext(CarritoContext);
+  const {
+    carrito,
+    agregarAlCarrito,
+    disminuirCantidad,
+    eliminarDelCarrito,
+    vaciarCarrito,
+    total,
+  } = useContext(CarritoContext);
 
   return (
     <div className="page-wrapper container py-5 text-center text-light">
@@ -19,7 +26,7 @@ const Carrito = () => {
           <div className="row justify-content-center mb-4">
             {carrito.map((item) => (
               <div key={item.id} className="col-12 col-md-6 col-lg-4 mb-4">
-                <div className="card bg-dark border border-success h-100">
+                <div className="card bg-dark border border-success h-100 shadow-lg">
                   <img
                     src={item.imagen}
                     alt={item.nombre}
@@ -27,16 +34,38 @@ const Carrito = () => {
                     style={{ maxHeight: "180px", objectFit: "contain" }}
                   />
                   <div className="card-body">
-                    <h5 className="card-title">{item.nombre}</h5>
+                    <h5 className="card-title text-neon-green">
+                      {item.nombre}
+                    </h5>
                     <p className="text-muted mb-2">{item.categoria}</p>
+
                     <p className="fw-bold text-success">
                       ${item.precio.toLocaleString()} x {item.cantidad}
                     </p>
+
+                    {/* 🔢 Control de cantidad */}
+                    <div className="d-flex justify-content-center align-items-center gap-3 mt-3">
+                      <button
+                        className="btn btn-outline-light btn-sm"
+                        onClick={() => disminuirCantidad(item.id)}
+                      >
+                        ➖
+                      </button>
+                      <span className="fw-bold fs-5">{item.cantidad}</span>
+                      <button
+                        className="btn btn-outline-light btn-sm"
+                        onClick={() => agregarAlCarrito(item)}
+                      >
+                        ➕
+                      </button>
+                    </div>
+
+                    {/* ❌ Eliminar producto */}
                     <button
-                      className="btn btn-outline-light mt-2"
+                      className="btn btn-outline-light mt-3"
                       onClick={() => eliminarDelCarrito(item.id)}
                     >
-                      ❌ Quitar
+                      🗑️ Quitar todo
                     </button>
                   </div>
                 </div>
@@ -44,13 +73,14 @@ const Carrito = () => {
             ))}
           </div>
 
-          <h3 className="text-neon-green mb-4">
+          {/* 💰 Total y acciones */}
+          <h3 className="text-neon-green mb-4 glow-text">
             💰 Total: ${total.toLocaleString()}
           </h3>
 
           <div className="d-flex justify-content-center gap-3">
             <button className="btn btn-outline-light" onClick={vaciarCarrito}>
-              🗑️ Vaciar carrito
+              🧹 Vaciar carrito
             </button>
             <button className="btn btn-hero">
               💳 Proceder al pago

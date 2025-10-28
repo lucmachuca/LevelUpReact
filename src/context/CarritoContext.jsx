@@ -15,12 +15,11 @@ export const CarritoProvider = ({ children }) => {
     localStorage.setItem("carrito", JSON.stringify(carrito));
   }, [carrito]);
 
-  // 🛒 Funciones básicas
+  // 🛒 Agregar producto al carrito
   const agregarAlCarrito = (producto) => {
     setCarrito((prev) => {
       const itemExistente = prev.find((p) => p.id === producto.id);
       if (itemExistente) {
-        // si ya existe, suma cantidad
         return prev.map((p) =>
           p.id === producto.id ? { ...p, cantidad: p.cantidad + 1 } : p
         );
@@ -29,12 +28,26 @@ export const CarritoProvider = ({ children }) => {
     });
   };
 
+  // 🔻 Disminuir cantidad (elimina si llega a 0)
+  const disminuirCantidad = (id) => {
+    setCarrito((prev) =>
+      prev
+        .map((p) =>
+          p.id === id ? { ...p, cantidad: p.cantidad - 1 } : p
+        )
+        .filter((p) => p.cantidad > 0)
+    );
+  };
+
+  // ❌ Eliminar completamente un producto
   const eliminarDelCarrito = (id) => {
     setCarrito((prev) => prev.filter((p) => p.id !== id));
   };
 
+  // 🧹 Vaciar carrito completo
   const vaciarCarrito = () => setCarrito([]);
 
+  // 💰 Calcular total
   const total = carrito.reduce(
     (acc, p) => acc + p.precio * p.cantidad,
     0
@@ -42,7 +55,14 @@ export const CarritoProvider = ({ children }) => {
 
   return (
     <CarritoContext.Provider
-      value={{ carrito, agregarAlCarrito, eliminarDelCarrito, vaciarCarrito, total }}
+      value={{
+        carrito,
+        agregarAlCarrito,
+        disminuirCantidad,
+        eliminarDelCarrito,
+        vaciarCarrito,
+        total,
+      }}
     >
       {children}
     </CarritoContext.Provider>
