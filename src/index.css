@@ -44,14 +44,11 @@ html, body {
   transition: all 0.3s ease;
 }
 
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 0 20px rgba(143, 0, 255, 0.3);
-}
-
 /* ============================================================
-🧮 BOTONES
+🧮 BOTONES (centralizados)
 ============================================================ */
+
+/* Botón base sólido */
 button, .btn {
   background-color: var(--color-accent-green);
   color: #000;
@@ -63,6 +60,20 @@ button, .btn {
 button:hover, .btn:hover {
   background-color: var(--color-accent-purple);
   color: #fff;
+  box-shadow: 0 0 15px var(--color-accent-green);
+}
+
+/* Variante contorneada */
+.btn-outline-light {
+  border: 1px solid var(--color-accent-green);
+  color: var(--color-accent-green);
+  background: transparent;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-light:hover {
+  background-color: var(--color-accent-green);
+  color: #000;
   box-shadow: 0 0 15px var(--color-accent-green);
 }
 
@@ -179,15 +190,12 @@ footer.footer p {
 }
 
 /* ============================================================
-🎯 FIX: COHERENCIA FINAL DE COLOR DE TEXTO (Bootstrap override)
+🎯 COHERENCIA GLOBAL DE COLOR Y TEXTOS
 ============================================================ */
-
-/* Forzar que todos los textos usen el color gamer global */
 body, main, section, div, p, small, span, label, .lead, .text-muted {
   color: var(--color-text) !important;
 }
 
-/* Quitar el gris oscuro de Bootstrap */
 .text-muted, .text-secondary, .text-body, .text-body-secondary, .text-black-50 {
   color: var(--color-text) !important;
   opacity: 1 !important;
