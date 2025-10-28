@@ -2,113 +2,90 @@
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CarritoContext } from "../context/CarritoContext";
-import "bootstrap/dist/css/bootstrap.min.css";
 
 const Checkout = () => {
   const { carrito, total, vaciarCarrito } = useContext(CarritoContext);
+  const [enviando, setEnviando] = useState(false);
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({
-    nombre: "",
-    correo: "",
-    direccion: "",
-    metodoPago: "tarjeta",
-  });
-
-  const [error, setError] = useState("");
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
-
-    if (!form.nombre || !form.correo || !form.direccion) {
-      setError("Por favor, completa todos los campos.");
-      return;
-    }
-
     if (carrito.length === 0) {
-      setError("Tu carrito está vacío.");
-      return;
+      return navigate("/carrito");
     }
 
-    // 🎲 Simulación aleatoria de pago (éxito/fallo)
-    const pagoExitoso = Math.random() > 0.3; // 70% éxito
+    setEnviando(true);
 
-    if (pagoExitoso) {
-      vaciarCarrito();
-      navigate("/compra-exitosa");
-    } else {
-      navigate("/compra-fallida");
-    }
+    // Simulación de procesamiento
+    setTimeout(() => {
+      const exito = true
+      if (exito) {
+        const orderId = "LVL-" + Math.floor(Math.random() * 1_000_000);
+        vaciarCarrito(); // vacía SOLO si fue exitosa
+        navigate("/compra-exitosa", {
+          state: { total, orderId },
+          replace: true,
+        });
+      } else {
+        navigate("/compra-fallida", { replace: true });
+      }
+    }, 1200);
   };
 
   return (
     <div className="page-wrapper container py-5 text-light">
-      <h1 className="display-5 fw-bold text-neon-green glow-text mb-4">
+      <h1 className="display-5 fw-bold text-neon-green glow-text text-center mb-4">
         💳 Checkout
       </h1>
 
-      <form
-        onSubmit={handleSubmit}
-        className="mx-auto bg-dark p-4 rounded-4 shadow-lg"
-        style={{ maxWidth: "600px" }}
-      >
-        <div className="mb-3">
-          <label className="form-label">Nombre completo</label>
-          <input
-            type="text"
-            name="nombre"
-            value={form.nombre}
-            onChange={handleChange}
-            className="form-control bg-dark text-light border-neon"
-          />
+      <div className="row justify-content-center">
+        <div className="col-12 col-lg-8">
+          <form className="p-4 rounded-3" onSubmit={onSubmit} style={{ background: "rgba(0,0,0,0.35)", border: "1px solid rgba(57,255,20,0.25)" }}>
+            <div className="row g-3">
+              <div className="col-md-6">
+                <label className="form-label">Nombre</label>
+                <input className="form-control border-neon bg-dark text-light" required />
+              </div>
+              <div className="col-md-6">
+                <label className="form-label">Apellido</label>
+                <input className="form-control border-neon bg-dark text-light" required />
+              </div>
+              <div className="col-12">
+                <label className="form-label">Correo</label>
+                <input type="email" className="form-control border-neon bg-dark text-light" required />
+              </div>
+              <div className="col-12">
+                <label className="form-label">Dirección</label>
+                <input className="form-control border-neon bg-dark text-light" required />
+              </div>
+              <div className="col-md-6">
+                <label className="form-label">Ciudad</label>
+                <input className="form-control border-neon bg-dark text-light" required />
+              </div>
+              <div className="col-md-6">
+                <label className="form-label">Método de pago</label>
+                <select className="form-select border-neon bg-dark text-light" required>
+                  <option value="tarjeta">Tarjeta de crédito/débito</option>
+                  <option value="transferencia">Transferencia</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="d-flex justify-content-between align-items-center mt-4">
+              <span className="fs-5">Total: <strong className="text-neon-green">${total.toLocaleString()}</strong></span>
+              <button className="btn btn-hero" disabled={enviando}>
+                {enviando ? "Procesando..." : "Confirmar compra"}
+              </button>
+            </div>
+          </form>
+
+          <div className="text-center mt-3">
+            <button className="btn btn-outline-light" onClick={() => navigate("/carrito")}>
+              🔙 Volver al carrito
+            </button>
+          </div>
         </div>
-
-        <div className="mb-3">
-          <label className="form-label">Correo electrónico</label>
-          <input
-            type="email"
-            name="correo"
-            value={form.correo}
-            onChange={handleChange}
-            className="form-control bg-dark text-light border-neon"
-          />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Dirección</label>
-          <input
-            type="text"
-            name="direccion"
-            value={form.direccion}
-            onChange={handleChange}
-            className="form-control bg-dark text-light border-neon"
-          />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Método de pago</label>
-          <select
-            name="metodoPago"
-            value={form.metodoPago}
-            onChange={handleChange}
-            className="form-select bg-dark text-light border-neon"
-          >
-            <option value="tarjeta">💳 Tarjeta de crédito</option>
-            <option value="debito">🏦 Tarjeta de débito</option>
-            <option value="transferencia">💸 Transferencia</option>
-          </select>
-        </div>
-
-        {error && <p className="text-danger mt-2">{error}</p>}
-
-        <button type="submit" className="btn btn-hero w-100 mt-3">
-          Confirmar compra (${total.toLocaleString()})
-        </button>
-      </form>
+      </div>
     </div>
   );
 };

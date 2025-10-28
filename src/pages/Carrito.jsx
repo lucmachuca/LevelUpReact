@@ -1,17 +1,19 @@
 // src/pages/Carrito.jsx
 import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { CarritoContext } from "../context/CarritoContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Carrito = () => {
   const {
     carrito,
-    agregarAlCarrito,
-    disminuirCantidad,
+    incrementarCantidad,
+    decrementarCantidad,
     eliminarDelCarrito,
-    vaciarCarrito,
     total,
   } = useContext(CarritoContext);
+
+  const navigate = useNavigate();
 
   return (
     <div className="page-wrapper container py-5 text-center text-light">
@@ -20,52 +22,57 @@ const Carrito = () => {
       </h1>
 
       {carrito.length === 0 ? (
-        <p className="text-muted fs-5">Tu carrito está vacío.</p>
+        <>
+          <p className="text-muted fs-5">Tu carrito está vacío.</p>
+          <button className="btn btn-outline-light mt-3" onClick={() => navigate("/productos")}>
+            🔙 Volver a productos
+          </button>
+        </>
       ) : (
         <>
           <div className="row justify-content-center mb-4">
             {carrito.map((item) => (
               <div key={item.id} className="col-12 col-md-6 col-lg-4 mb-4">
-                <div className="card bg-dark border border-success h-100 shadow-lg">
-                  <img
-                    src={item.imagen}
-                    alt={item.nombre}
-                    className="card-img-top p-3"
-                    style={{ maxHeight: "180px", objectFit: "contain" }}
-                  />
+                <div className="card bg-dark border border-success h-100">
+                  {item.imagen && (
+                    <img
+                      src={item.imagen}
+                      alt={item.nombre}
+                      className="card-img-top p-3"
+                      style={{ maxHeight: "180px", objectFit: "contain" }}
+                    />
+                  )}
                   <div className="card-body">
-                    <h5 className="card-title text-neon-green">
-                      {item.nombre}
-                    </h5>
+                    <h5 className="card-title">{item.nombre}</h5>
                     <p className="text-muted mb-2">{item.categoria}</p>
-
-                    <p className="fw-bold text-success">
-                      ${item.precio.toLocaleString()} x {item.cantidad}
+                    <p className="fw-bold text-success mb-2">
+                      ${item.precio.toLocaleString()}
                     </p>
 
-                    {/* 🔢 Control de cantidad */}
-                    <div className="d-flex justify-content-center align-items-center gap-3 mt-3">
+                    {/* Controles de cantidad */}
+                    <div className="d-flex justify-content-center align-items-center gap-2 mb-3">
                       <button
-                        className="btn btn-outline-light btn-sm"
-                        onClick={() => disminuirCantidad(item.id)}
+                        className="btn btn-outline-light"
+                        onClick={() => decrementarCantidad(item.id)}
+                        title="Restar 1"
                       >
-                        ➖
+                        −
                       </button>
-                      <span className="fw-bold fs-5">{item.cantidad}</span>
+                      <span className="px-3">{item.cantidad}</span>
                       <button
-                        className="btn btn-outline-light btn-sm"
-                        onClick={() => agregarAlCarrito(item)}
+                        className="btn btn-outline-light"
+                        onClick={() => incrementarCantidad(item.id)}
+                        title="Sumar 1"
                       >
-                        ➕
+                        +
                       </button>
                     </div>
 
-                    {/* ❌ Eliminar producto */}
                     <button
-                      className="btn btn-outline-light mt-3"
+                      className="btn btn-danger"
                       onClick={() => eliminarDelCarrito(item.id)}
                     >
-                      🗑️ Quitar todo
+                      🗑️ Quitar producto
                     </button>
                   </div>
                 </div>
@@ -73,16 +80,15 @@ const Carrito = () => {
             ))}
           </div>
 
-          {/* 💰 Total y acciones */}
-          <h3 className="text-neon-green mb-4 glow-text">
+          <h3 className="text-neon-green mb-4">
             💰 Total: ${total.toLocaleString()}
           </h3>
 
           <div className="d-flex justify-content-center gap-3">
-            <button className="btn btn-outline-light" onClick={vaciarCarrito}>
-              🧹 Vaciar carrito
+            <button className="btn btn-outline-light" onClick={() => navigate("/productos")}>
+              🔙 Seguir comprando
             </button>
-            <button className="btn btn-hero">
+            <button className="btn btn-hero" onClick={() => navigate("/checkout")}>
               💳 Proceder al pago
             </button>
           </div>
