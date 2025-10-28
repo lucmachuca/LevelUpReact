@@ -1,0 +1,27 @@
+.blog-container {
+  background-color: #000;
+  min-height: 100vh;
+  padding: 50px 20px;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.text-neon {
+  color: #39ff14;
+  text-shadow: 0 0 10px #39ff14;
+}
+
+.blog-card {
+  background: #111;
+  border: 2px solid #1e90ff;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 800px;
+  box-shadow: 0 0 20px #1e90ff50;
+  transition: transform 0.3s;
+}
+
+.blog-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 25px #39ff14;
+}
