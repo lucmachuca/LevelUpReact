@@ -1,0 +1,84 @@
+/* ====== ESTILOS DE REGISTRO ====== */
+
+.registro-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #000;
+  color: #fff;
+  font-family: "Roboto", sans-serif;
+}
+
+.registro-form {
+  background-color: #121212;
+  padding: 2rem 3rem;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+  width: 100%;
+  max-width: 420px;
+}
+
+.registro-form h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #00ffb3;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.registro-form label {
+  color: #ccc;
+  font-size: 0.95rem;
+  margin-bottom: 0.3rem;
+  display: block;
+}
+
+.registro-form input {
+  width: 100%;
+  padding: 0.7rem;
+  margin-bottom: 1rem;
+  border: 1px solid #333;
+  border-radius: 6px;
+  background-color: #1c1c1c;
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.registro-form input:focus {
+  border-color: #00ffb3;
+  outline: none;
+  box-shadow: 0 0 6px #00ffb3;
+}
+
+.registro-form button {
+  width: 100%;
+  padding: 0.8rem;
+  background-color: #00ffb3;
+  border: none;
+  border-radius: 6px;
+  color: #000;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.registro-form button:hover {
+  background-color: #00cc8e;
+}
+
+.registro-link {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.registro-link a {
+  color: #00ffb3;
+  text-decoration: none;
+}
+
+.registro-link a:hover {
+  text-decoration: underline;
+}
