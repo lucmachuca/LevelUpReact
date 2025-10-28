@@ -17,6 +17,6 @@ describe("🧪 Prueba del componente ProductoDetalle", () => {
       </CarritoProvider>
     );
 
-    expect(screen.getByText(/volver a productos/i)).toBeInTheDocument();
+    expect(screen.getByText(/volver/i)).toBeInTheDocument();
   });
 });

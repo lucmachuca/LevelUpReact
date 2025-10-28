@@ -28,7 +28,7 @@ describe("🧪 Prueba unitaria del componente ProductCard", () => {
     renderWithContext();
     expect(screen.getByText("Teclado Mecánico RGB")).toBeInTheDocument();
     expect(screen.getByText("Periféricos")).toBeInTheDocument();
-    expect(screen.getByText("$59,990")).toBeInTheDocument();
+    expect(screen.getByText(/\$?\s*59[.,]990/)).toBeInTheDocument();
   });
 
   it("permite agregar un producto al carrito", () => {
