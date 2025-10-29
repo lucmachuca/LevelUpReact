@@ -25,10 +25,12 @@ const Navbar: React.FC = () => {
   return (
     <nav className="navbar navbar-expand-lg site-header shadow-sm">
       <div className="container">
+        {/* LOGO / NOMBRE */}
         <Link className="navbar-brand fw-bold text-neon-green glow-text" to="/">
           🎮 Level-Up Gamer
         </Link>
 
+        {/* BOTÓN MÓVIL */}
         <button
           className="navbar-toggler"
           type="button"
@@ -41,8 +43,10 @@ const Navbar: React.FC = () => {
           <span className="navbar-toggler-icon" />
         </button>
 
+        {/* LINKS */}
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto align-items-center">
+            {/* Enlaces principales */}
             {navItems.map(({ path, label, icon }) => (
               <li className="nav-item" key={path}>
                 <Link
@@ -60,22 +64,56 @@ const Navbar: React.FC = () => {
 
             <li className="nav-item mx-2 text-success">|</li>
 
+            {/* Sesión */}
             {usuario ? (
               <>
+                {usuario.rol === "admin" ? (
+                  <li className="nav-item">
+                    <Link
+                      to="/admin"
+                      className={`nav-link ${
+                        location.pathname === "/admin"
+                          ? "nav-link-active text-neon-green glow-text"
+                          : "text-light"
+                      }`}
+                    >
+                      <i className="bi bi-shield-lock me-1" /> Panel Admin
+                    </Link>
+                  </li>
+                ) : (
+                  <>
+                    <li className="nav-item">
+                      <Link
+                        to="/perfil"
+                        className={`nav-link ${
+                          location.pathname === "/perfil"
+                            ? "nav-link-active text-neon-green glow-text"
+                            : "text-light"
+                        }`}
+                      >
+                        <i className="bi bi-person-circle me-1" /> {usuario.nombre}
+                      </Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link
+                        to="/historial"
+                        className={`nav-link ${
+                          location.pathname === "/historial"
+                            ? "nav-link-active text-neon-green glow-text"
+                            : "text-light"
+                        }`}
+                      >
+                        <i className="bi bi-receipt me-1" /> Historial
+                      </Link>
+                    </li>
+                  </>
+                )}
+
                 <li className="nav-item">
-                  <Link
-                    to={usuario.rol === "admin" ? "/admin" : "/perfil"}
-                    className={`nav-link ${
-                      location.pathname === "/perfil"
-                        ? "nav-link-active text-neon-green glow-text"
-                        : "text-light"
-                    }`}
+                  <button
+                    className="btn btn-link nav-link text-light"
+                    onClick={logout}
                   >
-                    <i className="bi bi-person-circle me-1" /> {usuario.nombre}
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <button className="btn btn-link nav-link text-light" onClick={logout}>
                     <i className="bi bi-box-arrow-right me-1" /> Cerrar sesión
                   </button>
                 </li>
