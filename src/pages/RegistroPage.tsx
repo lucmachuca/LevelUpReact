@@ -2,8 +2,6 @@ import React, { useMemo, useState } from "react";
 import { validarRegistro } from "../utils/ValidationRegistro";
 import { REGIONES_COMUNAS } from "../data/comunasPorRegion";
 import AlertMessage from "../components/AlertMessage";
-import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 
 interface RegistroForm {
   nombre: string;
@@ -28,8 +26,6 @@ const RegistroPage: React.FC = () => {
   const [errors, setErrors] = useState<Partial<Record<keyof RegistroForm, string>>>({});
   const [alert, setAlert] = useState<{ type: "success" | "danger"; text: string } | null>(null);
 
-  const { login } = useAuth();
-  const navigate = useNavigate();
   const comunas = useMemo(() => (form.region ? REGIONES_COMUNAS[form.region] || [] : []), [form.region]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
@@ -39,17 +35,40 @@ const RegistroPage: React.FC = () => {
     e.preventDefault();
     const val = validarRegistro(form);
     setErrors(val);
+
     if (Object.keys(val).length === 0) {
+      // Guardar usuario en localStorage
+      const usuarios = JSON.parse(localStorage.getItem("usuarios") || "[]");
+
+      const existe = usuarios.some((u: any) => u.email === form.email);
+      if (existe) {
+        setAlert({ type: "danger", text: "⚠️ Este correo ya está registrado." });
+        return;
+      }
+
       const nuevoUsuario = {
         nombre: form.nombre,
         email: form.email,
+        telefono: form.telefono,
         region: form.region,
         comuna: form.comuna,
-        rol: "user" as const,
+        password: form.password,
+        rol: "user",
       };
-      login(nuevoUsuario);
-      setAlert({ type: "success", text: "Registro completado ✅ Has iniciado sesión." });
-      navigate("/");
+
+      usuarios.push(nuevoUsuario);
+      localStorage.setItem("usuarios", JSON.stringify(usuarios));
+
+      setAlert({ type: "success", text: "✅ Registro completado. Ya puedes iniciar sesión." });
+      setForm({
+        nombre: "",
+        email: "",
+        telefono: "",
+        region: "",
+        comuna: "",
+        password: "",
+        confirmPassword: "",
+      });
     } else {
       setAlert({ type: "danger", text: "Revisa los campos marcados." });
     }
@@ -72,6 +91,7 @@ const RegistroPage: React.FC = () => {
             />
             {errors.nombre && <small className="text-danger">{errors.nombre}</small>}
           </div>
+
           <div className="col-md-6">
             <label htmlFor="email" className="form-label">Correo electrónico</label>
             <input
@@ -81,6 +101,7 @@ const RegistroPage: React.FC = () => {
             />
             {errors.email && <small className="text-danger">{errors.email}</small>}
           </div>
+
           <div className="col-md-6">
             <label htmlFor="telefono" className="form-label">Teléfono (opcional)</label>
             <input
@@ -89,6 +110,7 @@ const RegistroPage: React.FC = () => {
               value={form.telefono || ""} onChange={onChange}
             />
           </div>
+
           <div className="col-md-6">
             <label htmlFor="region" className="form-label">Región</label>
             <select
@@ -103,6 +125,7 @@ const RegistroPage: React.FC = () => {
             </select>
             {errors.region && <small className="text-danger">{errors.region}</small>}
           </div>
+
           <div className="col-md-6">
             <label htmlFor="comuna" className="form-label">Comuna</label>
             <select
@@ -117,6 +140,7 @@ const RegistroPage: React.FC = () => {
             </select>
             {errors.comuna && <small className="text-danger">{errors.comuna}</small>}
           </div>
+
           <div className="col-md-6">
             <label htmlFor="password" className="form-label">Contraseña</label>
             <input
@@ -126,6 +150,7 @@ const RegistroPage: React.FC = () => {
             />
             {errors.password && <small className="text-danger">{errors.password}</small>}
           </div>
+
           <div className="col-md-6">
             <label htmlFor="confirmPassword" className="form-label">Confirmar contraseña</label>
             <input

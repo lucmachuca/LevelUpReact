@@ -19,15 +19,21 @@ const LoginPage: React.FC = () => {
     e.preventDefault();
     const val = validarLogin(form);
     setErrors(val);
+
     if (Object.keys(val).length === 0) {
-      const userData = {
-        nombre: "Jugador",
-        email: form.email,
-        rol: form.email.includes("admin") ? "admin" : "user",
-      };
-      login(userData);
-      setAlert({ type: "success", text: "Login correcto ✅" });
-      navigate("/");
+      const usuarios = JSON.parse(localStorage.getItem("usuarios") || "[]");
+
+      const encontrado = usuarios.find(
+        (u: any) => u.email === form.email && u.password === form.password
+      );
+
+      if (encontrado) {
+        login(encontrado);
+        setAlert({ type: "success", text: "✅ Bienvenido de nuevo, " + encontrado.nombre });
+        navigate("/");
+      } else {
+        setAlert({ type: "danger", text: "❌ Usuario o contraseña incorrectos." });
+      }
     } else {
       setAlert({ type: "danger", text: "Revisa los campos marcados." });
     }
@@ -62,11 +68,13 @@ const LoginPage: React.FC = () => {
 
         <button type="submit" className="btn btn-hero w-100">Ingresar</button>
 
+        {/* Acceso rápido admin */}
         <button
           type="button"
           className="btn btn-outline-warning w-100 mt-3"
           onClick={() => {
-            login({ nombre: "Admin", email: "admin@levelup.com", rol: "admin" });
+            const admin = { nombre: "Admin", email: "admin@levelup.com", rol: "admin" };
+            login(admin);
             navigate("/admin");
           }}
         >
