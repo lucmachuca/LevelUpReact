@@ -108,14 +108,16 @@ const Navbar: React.FC = () => {
                     </li>
                   </>
                 )}
-
                 <li className="nav-item">
                   <button
-                    className="btn btn-link nav-link text-light"
-                    onClick={logout}
-                  >
-                    <i className="bi bi-box-arrow-right me-1" /> Cerrar sesión
-                  </button>
+            className="btn btn-link nav-link text-light"
+            onClick={() => {
+              logout();
+              window.location.href = "/"; // 🔁 redirige al home
+            }}
+          >
+            <i className="bi bi-box-arrow-right me-1" /> Cerrar sesión
+          </button>
                 </li>
               </>
             ) : (
