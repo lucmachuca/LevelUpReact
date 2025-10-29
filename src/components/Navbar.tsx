@@ -12,11 +12,19 @@ interface NavItem {
 const Navbar: React.FC = () => {
   const location = useLocation();
 
+  // Menú principal limpio, sin duplicados
   const navItems: NavItem[] = [
     { path: "/", label: "Inicio", icon: "house-door" },
     { path: "/productos", label: "Productos", icon: "bag" },
     { path: "/contacto", label: "Contacto", icon: "envelope" },
+    { path: "/blog", label: "Blog", icon: "newspaper" },
     { path: "/carrito", label: "Carrito", icon: "cart3" },
+  ];
+
+  // Menú de usuario (lado derecho)
+  const userItems: NavItem[] = [
+    { path: "/login", label: "Login", icon: "box-arrow-in-right" },
+    { path: "/registro", label: "Registro", icon: "person-plus" },
   ];
 
   return (
@@ -42,14 +50,34 @@ const Navbar: React.FC = () => {
 
         {/* LINKS */}
         <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto">
+          <ul className="navbar-nav ms-auto align-items-center">
+            {/* Sección principal */}
             {navItems.map(({ path, label, icon }) => (
               <li className="nav-item" key={path}>
                 <Link
                   to={path}
                   className={`nav-link ${
                     location.pathname === path
-                      ? "nav-link-active text-neon-green"
+                      ? "nav-link-active text-neon-green glow-text"
+                      : "text-light"
+                  }`}
+                >
+                  <i className={`bi bi-${icon} me-1`} /> {label}
+                </Link>
+              </li>
+            ))}
+
+            {/* Separador visual */}
+            <li className="nav-item mx-2 text-success">|</li>
+
+            {/* Sección de usuario */}
+            {userItems.map(({ path, label, icon }) => (
+              <li className="nav-item" key={path}>
+                <Link
+                  to={path}
+                  className={`nav-link ${
+                    location.pathname === path
+                      ? "nav-link-active text-neon-green glow-text"
                       : "text-light"
                   }`}
                 >
