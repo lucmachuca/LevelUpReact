@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
@@ -11,8 +12,8 @@ interface NavItem {
 
 const Navbar: React.FC = () => {
   const location = useLocation();
+  const { usuario, logout } = useAuth();
 
-  // Menú principal limpio, sin duplicados
   const navItems: NavItem[] = [
     { path: "/", label: "Inicio", icon: "house-door" },
     { path: "/productos", label: "Productos", icon: "bag" },
@@ -21,21 +22,13 @@ const Navbar: React.FC = () => {
     { path: "/carrito", label: "Carrito", icon: "cart3" },
   ];
 
-  // Menú de usuario (lado derecho)
-  const userItems: NavItem[] = [
-    { path: "/login", label: "Login", icon: "box-arrow-in-right" },
-    { path: "/registro", label: "Registro", icon: "person-plus" },
-  ];
-
   return (
     <nav className="navbar navbar-expand-lg site-header shadow-sm">
       <div className="container">
-        {/* LOGO / NOMBRE */}
         <Link className="navbar-brand fw-bold text-neon-green glow-text" to="/">
           🎮 Level-Up Gamer
         </Link>
 
-        {/* BOTÓN MÓVIL */}
         <button
           className="navbar-toggler"
           type="button"
@@ -48,10 +41,8 @@ const Navbar: React.FC = () => {
           <span className="navbar-toggler-icon" />
         </button>
 
-        {/* LINKS */}
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto align-items-center">
-            {/* Sección principal */}
             {navItems.map(({ path, label, icon }) => (
               <li className="nav-item" key={path}>
                 <Link
@@ -67,24 +58,42 @@ const Navbar: React.FC = () => {
               </li>
             ))}
 
-            {/* Separador visual */}
             <li className="nav-item mx-2 text-success">|</li>
 
-            {/* Sección de usuario */}
-            {userItems.map(({ path, label, icon }) => (
-              <li className="nav-item" key={path}>
-                <Link
-                  to={path}
-                  className={`nav-link ${
-                    location.pathname === path
-                      ? "nav-link-active text-neon-green glow-text"
-                      : "text-light"
-                  }`}
-                >
-                  <i className={`bi bi-${icon} me-1`} /> {label}
-                </Link>
-              </li>
-            ))}
+            {usuario ? (
+              <>
+                <li className="nav-item">
+                  <Link
+                    to={usuario.rol === "admin" ? "/admin" : "/perfil"}
+                    className={`nav-link ${
+                      location.pathname === "/perfil"
+                        ? "nav-link-active text-neon-green glow-text"
+                        : "text-light"
+                    }`}
+                  >
+                    <i className="bi bi-person-circle me-1" /> {usuario.nombre}
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <button className="btn btn-link nav-link text-light" onClick={logout}>
+                    <i className="bi bi-box-arrow-right me-1" /> Cerrar sesión
+                  </button>
+                </li>
+              </>
+            ) : (
+              <>
+                <li className="nav-item">
+                  <Link to="/login" className="nav-link text-light">
+                    <i className="bi bi-box-arrow-in-right me-1" /> Login
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link to="/registro" className="nav-link text-light">
+                    <i className="bi bi-person-plus me-1" /> Registro
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </div>

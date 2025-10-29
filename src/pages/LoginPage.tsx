@@ -1,11 +1,16 @@
 import React, { useState } from "react";
 import { validarLogin } from "../utils/ValidationLogin";
 import AlertMessage from "../components/AlertMessage";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage: React.FC = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [alert, setAlert] = useState<{ type: "success" | "danger"; text: string } | null>(null);
+
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -15,8 +20,14 @@ const LoginPage: React.FC = () => {
     const val = validarLogin(form);
     setErrors(val);
     if (Object.keys(val).length === 0) {
-      // Simulación login OK
-      setAlert({ type: "success", text: "Login correcto. ¡Bienvenido!" });
+      const userData = {
+        nombre: "Jugador",
+        email: form.email,
+        rol: form.email.includes("admin") ? "admin" : "user",
+      };
+      login(userData);
+      setAlert({ type: "success", text: "Login correcto ✅" });
+      navigate("/");
     } else {
       setAlert({ type: "danger", text: "Revisa los campos marcados." });
     }
@@ -28,16 +39,13 @@ const LoginPage: React.FC = () => {
 
       {alert && <AlertMessage type={alert.type}>{alert.text}</AlertMessage>}
 
-      <form className="bg-dark border border-success p-4 rounded shadow" onSubmit={onSubmit} noValidate>
+      <form className="bg-dark border border-success p-4 rounded shadow" onSubmit={onSubmit}>
         <div className="mb-3">
           <label htmlFor="email" className="form-label">Correo electrónico</label>
           <input
-            id="email"
-            name="email"
-            type="email"
+            id="email" name="email" type="email"
             className={`form-control bg-dark text-light border ${errors.email ? "border-danger" : "border-success"}`}
-            value={form.email}
-            onChange={onChange}
+            value={form.email} onChange={onChange}
           />
           {errors.email && <small className="text-danger">{errors.email}</small>}
         </div>
@@ -45,17 +53,25 @@ const LoginPage: React.FC = () => {
         <div className="mb-3">
           <label htmlFor="password" className="form-label">Contraseña</label>
           <input
-            id="password"
-            name="password"
-            type="password"
+            id="password" name="password" type="password"
             className={`form-control bg-dark text-light border ${errors.password ? "border-danger" : "border-success"}`}
-            value={form.password}
-            onChange={onChange}
+            value={form.password} onChange={onChange}
           />
           {errors.password && <small className="text-danger">{errors.password}</small>}
         </div>
 
         <button type="submit" className="btn btn-hero w-100">Ingresar</button>
+
+        <button
+          type="button"
+          className="btn btn-outline-warning w-100 mt-3"
+          onClick={() => {
+            login({ nombre: "Admin", email: "admin@levelup.com", rol: "admin" });
+            navigate("/admin");
+          }}
+        >
+          Ingresar como administrador
+        </button>
       </form>
     </section>
   );

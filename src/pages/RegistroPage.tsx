@@ -2,6 +2,8 @@ import React, { useMemo, useState } from "react";
 import { validarRegistro } from "../utils/ValidationRegistro";
 import { REGIONES_COMUNAS } from "../data/comunasPorRegion";
 import AlertMessage from "../components/AlertMessage";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface RegistroForm {
   nombre: string;
@@ -26,6 +28,8 @@ const RegistroPage: React.FC = () => {
   const [errors, setErrors] = useState<Partial<Record<keyof RegistroForm, string>>>({});
   const [alert, setAlert] = useState<{ type: "success" | "danger"; text: string } | null>(null);
 
+  const { login } = useAuth();
+  const navigate = useNavigate();
   const comunas = useMemo(() => (form.region ? REGIONES_COMUNAS[form.region] || [] : []), [form.region]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
@@ -36,8 +40,16 @@ const RegistroPage: React.FC = () => {
     const val = validarRegistro(form);
     setErrors(val);
     if (Object.keys(val).length === 0) {
-      setAlert({ type: "success", text: "Registro completado ✅" });
-      // Aquí podrías persistir en localStorage si quieres
+      const nuevoUsuario = {
+        nombre: form.nombre,
+        email: form.email,
+        region: form.region,
+        comuna: form.comuna,
+        rol: "user" as const,
+      };
+      login(nuevoUsuario);
+      setAlert({ type: "success", text: "Registro completado ✅ Has iniciado sesión." });
+      navigate("/");
     } else {
       setAlert({ type: "danger", text: "Revisa los campos marcados." });
     }
