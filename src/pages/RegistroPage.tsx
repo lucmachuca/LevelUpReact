@@ -1,137 +1,214 @@
 import React, { useMemo, useState } from "react";
-import { validarRegistro } from "../utils/ValidationRegistro";
-import { REGIONES_COMUNAS } from "../data/comunasPorRegion";
 import AlertMessage from "../components/AlertMessage";
+import { registrarUsuario } from "../services/AuthService";
+import { REGIONES_COMUNAS } from "../data/comunasPorRegion";
+import { calcularEdad } from "../utils/ValidationRegistro";
 
 interface RegistroForm {
   nombre: string;
-  email: string;
+  apellido: string;
+  correo: string;
+  contrasena: string;
+  confirmarContrasena: string;
+
+  // campos visuales
+  region?: string;
+  comuna?: string;
+  fechaNacimiento?: string;
   telefono?: string;
-  region: string;
-  comuna: string;
-  password: string;
-  confirmPassword: string;
-  fechaNacimiento: string;
 }
 
 const RegistroPage: React.FC = () => {
   const [form, setForm] = useState<RegistroForm>({
     nombre: "",
-    email: "",
-    telefono: "",
+    apellido: "",
+    correo: "",
+    contrasena: "",
+    confirmarContrasena: "",
     region: "",
     comuna: "",
-    password: "",
-    confirmPassword: "",
     fechaNacimiento: "",
+    telefono: "",
   });
-  const [errors, setErrors] = useState<Partial<Record<keyof RegistroForm, string>>>({});
-  const [alert, setAlert] = useState<{ type: "success" | "danger"; text: string } | null>(null);
 
-  const comunas = useMemo(() => (form.region ? REGIONES_COMUNAS[form.region] || [] : []), [form.region]);
+  const [alert, setAlert] = useState<{
+    type: "success" | "danger";
+    text: string;
+  } | null>(null);
+  const [errors, setErrors] = useState<Partial<RegistroForm>>({});
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+  const comunas = useMemo(
+    () => (form.region ? REGIONES_COMUNAS[form.region] || [] : []),
+    [form.region]
+  );
+
+  const onChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const val = validarRegistro(form);
-    setErrors(val);
 
-    if (Object.keys(val).length === 0) {
-      const usuarios = JSON.parse(localStorage.getItem("usuarios") || "[]");
+    const newErrors: Partial<RegistroForm> = {};
 
-      if (usuarios.some((u: any) => u.email === form.email)) {
-        setAlert({ type: "danger", text: "⚠️ Este correo ya está registrado." });
-        return;
-      }
+    // validaciones simples del front
+    if (!form.nombre.trim()) newErrors.nombre = "Ingresa tu nombre";
+    if (!form.apellido.trim()) newErrors.apellido = "Ingresa tu apellido";
 
-      // Lógica de Descuento Duoc (se mantiene)
-      const esDuoc = form.email.toLowerCase().endsWith("@duoc.cl");
+    if (!form.correo.trim()) newErrors.correo = "Ingresa un correo válido";
+    else if (!/\S+@\S+\.\S+/.test(form.correo))
+      newErrors.correo = "Correo inválido";
 
-      const nuevoUsuario = {
-        ...form,
-        rol: "user",
-        descuento: esDuoc ? 20 : 0,
-      };
+    if (!form.contrasena.trim()) newErrors.contrasena = "Crea una contraseña";
+    if (form.contrasena !== form.confirmarContrasena)
+      newErrors.confirmarContrasena = "Las contraseñas no coinciden";
 
-      usuarios.push(nuevoUsuario);
-      localStorage.setItem("usuarios", JSON.stringify(usuarios));
+    // calcular edad con la función importada
+    const edadCalculada = form.fechaNacimiento
+      ? calcularEdad(form.fechaNacimiento)
+      : 0;
 
-      let msg = "✅ Registro completado.";
-      if (esDuoc) msg += " ¡Tienes 20% OFF por ser Duoc!";
+    if (edadCalculada < 18) {
+      newErrors.fechaNacimiento = "Debes tener al menos 18 años";
+    }
 
-      setAlert({ type: "success", text: msg });
-      
-      setForm({
-        nombre: "", email: "", telefono: "", region: "", comuna: "",
-        password: "", confirmPassword: "", fechaNacimiento: ""
-      });
-    } else {
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
       setAlert({ type: "danger", text: "Revisa los campos marcados." });
+      return;
+    }
+
+    try {
+      // se envían solo los campos que backend espera
+      await registrarUsuario({
+        nombre: form.nombre,
+        apellido: form.apellido,
+        correo: form.correo,
+        contrasena: form.contrasena,
+        edad: edadCalculada,
+      });
+
+      setAlert({
+        type: "success",
+        text: "Registro exitoso. Ahora inicia sesión.",
+      });
+
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1500);
+    } catch (error: any) {
+      setAlert({
+        type: "danger",
+        text: error.message || "No se pudo registrar tu cuenta.",
+      });
     }
   };
 
   return (
     <section className="container py-5 text-light" style={{ maxWidth: 720 }}>
-      <h1 className="text-center text-neon-green glow-text mb-4">Crear cuenta Level-Up</h1>
+      <h1 className="text-center text-neon-green glow-text mb-4">
+        Crear cuenta Level-Up
+      </h1>
 
       {alert && <AlertMessage type={alert.type}>{alert.text}</AlertMessage>}
 
-      <form className="bg-dark border border-success p-4 rounded shadow" onSubmit={onSubmit} noValidate>
+      <form
+        className="bg-dark border border-success p-4 rounded shadow"
+        onSubmit={onSubmit}
+        noValidate
+      >
         <div className="row g-3">
           <div className="col-md-6">
-            <label className="form-label">Nombre completo</label>
-            <input name="nombre" type="text" className="form-control bg-dark text-light border-success" value={form.nombre} onChange={onChange} />
-            {errors.nombre && <small className="text-danger">{errors.nombre}</small>}
-          </div>
-          <div className="col-md-6">
-            <label className="form-label">Correo (Usa @duoc.cl para dcto)</label>
-            <input name="email" type="email" className="form-control bg-dark text-light border-success" value={form.email} onChange={onChange} />
-            {errors.email && <small className="text-danger">{errors.email}</small>}
-          </div>
-
-          <div className="col-md-6">
-            <label className="form-label">Fecha de Nacimiento</label>
-            <input name="fechaNacimiento" type="date" className="form-control bg-dark text-light border-success" value={form.fechaNacimiento} onChange={onChange} />
-            {errors.fechaNacimiento && <small className="text-danger">{errors.fechaNacimiento}</small>}
+            <label className="form-label">Nombre</label>
+            <input
+              name="nombre"
+              className="form-control bg-dark text-light border-success"
+              value={form.nombre}
+              onChange={onChange}
+            />
+            {errors.nombre && (
+              <small className="text-danger">{errors.nombre}</small>
+            )}
           </div>
 
           <div className="col-md-6">
-            <label className="form-label">Teléfono (opcional)</label>
-            <input name="telefono" type="tel" className="form-control bg-dark text-light border-success" value={form.telefono} onChange={onChange} />
+            <label className="form-label">Apellido</label>
+            <input
+              name="apellido"
+              className="form-control bg-dark text-light border-success"
+              value={form.apellido}
+              onChange={onChange}
+            />
+            {errors.apellido && (
+              <small className="text-danger">{errors.apellido}</small>
+            )}
           </div>
 
           <div className="col-md-6">
-            <label className="form-label">Región</label>
-            <select name="region" className="form-select bg-dark text-light border-success" value={form.region} onChange={onChange}>
-              <option value="">Selecciona...</option>
-              {Object.keys(REGIONES_COMUNAS).map((r) => <option key={r} value={r}>{r}</option>)}
-            </select>
-            {errors.region && <small className="text-danger">{errors.region}</small>}
+            <label className="form-label">Correo</label>
+            <input
+              name="correo"
+              type="email"
+              className="form-control bg-dark text-light border-success"
+              value={form.correo}
+              onChange={onChange}
+            />
+            {errors.correo && (
+              <small className="text-danger">{errors.correo}</small>
+            )}
           </div>
+
           <div className="col-md-6">
-            <label className="form-label">Comuna</label>
-            <select name="comuna" className="form-select bg-dark text-light border-success" value={form.comuna} onChange={onChange} disabled={!form.region}>
-              <option value="">Selecciona...</option>
-              {comunas.map((c) => <option key={c} value={c}>{c}</option>)}
-            </select>
-            {errors.comuna && <small className="text-danger">{errors.comuna}</small>}
+            <label className="form-label">Fecha de nacimiento</label>
+            <input
+              name="fechaNacimiento"
+              type="date"
+              className="form-control bg-dark text-light border-success"
+              value={form.fechaNacimiento}
+              onChange={onChange}
+            />
+            {errors.fechaNacimiento && (
+              <small className="text-danger">{errors.fechaNacimiento}</small>
+            )}
           </div>
 
           <div className="col-md-6">
             <label className="form-label">Contraseña</label>
-            <input name="password" type="password" className="form-control bg-dark text-light border-success" value={form.password} onChange={onChange} />
-            {errors.password && <small className="text-danger">{errors.password}</small>}
+            <input
+              name="contrasena"
+              type="password"
+              className="form-control bg-dark text-light border-success"
+              value={form.contrasena}
+              onChange={onChange}
+            />
+            {errors.contrasena && (
+              <small className="text-danger">{errors.contrasena}</small>
+            )}
           </div>
+
           <div className="col-md-6">
             <label className="form-label">Confirmar contraseña</label>
-            <input name="confirmPassword" type="password" className="form-control bg-dark text-light border-success" value={form.confirmPassword} onChange={onChange} />
-            {errors.confirmPassword && <small className="text-danger">{errors.confirmPassword}</small>}
+            <input
+              name="confirmarContrasena"
+              type="password"
+              className="form-control bg-dark text-light border-success"
+              value={form.confirmarContrasena}
+              onChange={onChange}
+            />
+            {errors.confirmarContrasena && (
+              <small className="text-danger">
+                {errors.confirmarContrasena}
+              </small>
+            )}
           </div>
         </div>
 
-        <button type="submit" className="btn btn-hero w-100 mt-4">Registrarme</button>
+        <button type="submit" className="btn btn-hero w-100 mt-4">
+          Registrarme
+        </button>
       </form>
     </section>
   );

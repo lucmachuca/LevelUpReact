@@ -9,7 +9,7 @@ const ProductoDetalle: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { agregarAlCarrito } = useContext(CarritoContext) as CarritoContextType;
-  
+
   // ✅ Estado local para el producto con stock actualizado
   const [producto, setProducto] = useState<Producto | null>(null);
   const [relacionados, setRelacionados] = useState<Producto[]>([]);
@@ -18,20 +18,26 @@ const ProductoDetalle: React.FC = () => {
     // Buscar en localStorage primero
     const savedProducts = JSON.parse(localStorage.getItem("productos") || "[]");
     const fuenteDatos = savedProducts.length > 0 ? savedProducts : productsData;
-    
-    const found = fuenteDatos.find((p: Producto) => p.id === parseInt(id || "", 10));
+
+    const found = fuenteDatos.find(
+      (p: Producto) => p.id === parseInt(id || "", 10)
+    );
     setProducto(found || null);
 
     if (found) {
       setRelacionados(
         fuenteDatos
-          .filter((p: Producto) => p.categoria === found.categoria && p.id !== found.id)
+          .filter(
+            (p: Producto) =>
+              p.categoria === found.categoria && p.id !== found.id
+          )
           .slice(0, 3)
       );
     }
   }, [id]);
 
-  if (!producto) return <p className="text-center text-light py-5">Cargando producto...</p>;
+  if (!producto)
+    return <p className="text-center text-light py-5">Cargando producto...</p>;
 
   const sinStock = (producto.stock ?? 0) <= 0;
 
@@ -42,8 +48,14 @@ const ProductoDetalle: React.FC = () => {
           <img
             src={producto.imagen}
             alt={producto.nombre}
-            className={`img-fluid rounded shadow-lg ${sinStock ? "grayscale" : ""}`}
-            style={{ maxHeight: "400px", objectFit: "contain", filter: sinStock ? "grayscale(100%)" : "none" }}
+            className={`img-fluid rounded shadow-lg ${
+              sinStock ? "grayscale" : ""
+            }`}
+            style={{
+              maxHeight: "400px",
+              objectFit: "contain",
+              filter: sinStock ? "grayscale(100%)" : "none",
+            }}
           />
         </div>
         <div className="col-md-6">
@@ -52,21 +64,28 @@ const ProductoDetalle: React.FC = () => {
           <p className="fw-bold text-success fs-4 mb-4">
             ${producto.precio.toLocaleString()}
           </p>
-          
+
           <div className="mb-4">
-            <span className={`badge fs-6 ${sinStock ? "bg-danger" : "bg-success"}`}>
+            <span
+              className={`badge fs-6 ${sinStock ? "bg-danger" : "bg-success"}`}
+            >
               {sinStock ? "AGOTADO" : `Stock disponible: ${producto.stock}`}
             </span>
           </div>
 
-          <p className="section-text">{producto.descripcion || "Sin descripción."}</p>
-          
+          <p className="section-text">
+            {producto.descripcion || "Sin descripción."}
+          </p>
+
           <div className="mt-4 d-flex gap-3">
-            <button className="btn btn-outline-light" onClick={() => navigate(-1)}>
+            <button
+              className="btn btn-outline-light"
+              onClick={() => navigate(-1)}
+            >
               🔙 Volver
             </button>
-            <button 
-              className={`btn ${sinStock ? "btn-secondary" : "btn-hero"}`} 
+            <button
+              className={`btn ${sinStock ? "btn-secondary" : "btn-hero"}`}
               onClick={() => agregarAlCarrito(producto)}
               disabled={sinStock}
             >
