@@ -1,20 +1,30 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import productsData from "../data/productsData";
 import ProductCard from "../components/ProductCard";
 
 const Productos: React.FC = () => {
-  // ✅ Estados para filtros
+  const [productos, setProductos] = useState(productsData);
   const [busqueda, setBusqueda] = useState("");
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("Todas");
 
-  // Obtener categorías únicas dinámicamente
-  const categorias = useMemo(() => {
-    const cats = Array.from(new Set(productsData.map((p) => p.categoria)));
-    return ["Todas", ...cats];
+  // ✅ Cargar productos mezclando estáticos con stock actualizado de localStorage
+  useEffect(() => {
+    const productosGuardados = localStorage.getItem("productos");
+    if (productosGuardados) {
+      setProductos(JSON.parse(productosGuardados));
+    } else {
+      // Si no hay nada en LS, inicializamos LS con los datos base para tener el stock
+      localStorage.setItem("productos", JSON.stringify(productsData));
+      setProductos(productsData);
+    }
   }, []);
 
-  // ✅ Lógica de filtrado
-  const productosFiltrados = productsData.filter((producto) => {
+  const categorias = useMemo(() => {
+    const cats = Array.from(new Set(productos.map((p) => p.categoria)));
+    return ["Todas", ...cats];
+  }, [productos]);
+
+  const productosFiltrados = productos.filter((producto) => {
     const coincideNombre = producto.nombre.toLowerCase().includes(busqueda.toLowerCase());
     const coincideCategoria = categoriaSeleccionada === "Todas" || producto.categoria === categoriaSeleccionada;
     return coincideNombre && coincideCategoria;
@@ -24,7 +34,6 @@ const Productos: React.FC = () => {
     <div className="container py-5 text-light">
       <h1 className="text-center mb-4 text-neon-green glow-text">Catálogo de Productos</h1>
 
-      {/* 🔍 Barra de Búsqueda y Filtros */}
       <div className="row mb-5 g-3 justify-content-center">
         <div className="col-md-6">
           <input
@@ -48,7 +57,6 @@ const Productos: React.FC = () => {
         </div>
       </div>
 
-      {/* Renderizado */}
       <div className="row g-4 justify-content-center">
         {productosFiltrados.length > 0 ? (
           productosFiltrados.map((producto) => (

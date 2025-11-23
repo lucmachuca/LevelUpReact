@@ -1,23 +1,39 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import productsData from "../data/productsData";
 import ProductCard from "../components/ProductCard";
-
-// 👇 separa valor y tipo
 import { CarritoContext } from "../context/CarritoContext";
-import type { CarritoContextType } from "../context/CarritoContext";
+import type { CarritoContextType, Producto } from "../context/CarritoContext";
 
 const ProductoDetalle: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { agregarAlCarrito } = useContext(CarritoContext) as CarritoContextType;
+  
+  // ✅ Estado local para el producto con stock actualizado
+  const [producto, setProducto] = useState<Producto | null>(null);
+  const [relacionados, setRelacionados] = useState<Producto[]>([]);
 
-  const producto = productsData.find((p) => p.id === parseInt(id || "", 10));
-  if (!producto) return <p className="text-center text-light">Producto no encontrado.</p>;
+  useEffect(() => {
+    // Buscar en localStorage primero
+    const savedProducts = JSON.parse(localStorage.getItem("productos") || "[]");
+    const fuenteDatos = savedProducts.length > 0 ? savedProducts : productsData;
+    
+    const found = fuenteDatos.find((p: Producto) => p.id === parseInt(id || "", 10));
+    setProducto(found || null);
 
-  const productosRelacionados = productsData
-    .filter((p) => p.categoria === producto.categoria && p.id !== producto.id)
-    .slice(0, 3);
+    if (found) {
+      setRelacionados(
+        fuenteDatos
+          .filter((p: Producto) => p.categoria === found.categoria && p.id !== found.id)
+          .slice(0, 3)
+      );
+    }
+  }, [id]);
+
+  if (!producto) return <p className="text-center text-light py-5">Cargando producto...</p>;
+
+  const sinStock = (producto.stock ?? 0) <= 0;
 
   return (
     <div className="page-wrapper container py-5 text-light">
@@ -26,8 +42,8 @@ const ProductoDetalle: React.FC = () => {
           <img
             src={producto.imagen}
             alt={producto.nombre}
-            className="img-fluid rounded shadow-lg"
-            style={{ maxHeight: "400px", objectFit: "contain" }}
+            className={`img-fluid rounded shadow-lg ${sinStock ? "grayscale" : ""}`}
+            style={{ maxHeight: "400px", objectFit: "contain", filter: sinStock ? "grayscale(100%)" : "none" }}
           />
         </div>
         <div className="col-md-6">
@@ -36,13 +52,25 @@ const ProductoDetalle: React.FC = () => {
           <p className="fw-bold text-success fs-4 mb-4">
             ${producto.precio.toLocaleString()}
           </p>
-          <p className="section-text">{producto.descripcion}</p>
+          
+          <div className="mb-4">
+            <span className={`badge fs-6 ${sinStock ? "bg-danger" : "bg-success"}`}>
+              {sinStock ? "AGOTADO" : `Stock disponible: ${producto.stock}`}
+            </span>
+          </div>
+
+          <p className="section-text">{producto.descripcion || "Sin descripción."}</p>
+          
           <div className="mt-4 d-flex gap-3">
             <button className="btn btn-outline-light" onClick={() => navigate(-1)}>
               🔙 Volver
             </button>
-            <button className="btn btn-hero" onClick={() => agregarAlCarrito(producto)}>
-              🛒 Agregar al carrito
+            <button 
+              className={`btn ${sinStock ? "btn-secondary" : "btn-hero"}`} 
+              onClick={() => agregarAlCarrito(producto)}
+              disabled={sinStock}
+            >
+              {sinStock ? "🚫 Sin Stock" : "🛒 Agregar al carrito"}
             </button>
           </div>
         </div>
@@ -53,7 +81,7 @@ const ProductoDetalle: React.FC = () => {
           🔗 Productos Relacionados
         </h3>
         <div className="row justify-content-center g-4">
-          {productosRelacionados.map((relacionado) => (
+          {relacionados.map((relacionado) => (
             <div key={relacionado.id} className="col-12 col-sm-6 col-md-4">
               <ProductCard producto={relacionado} />
             </div>

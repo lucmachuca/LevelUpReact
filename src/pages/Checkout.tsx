@@ -1,7 +1,8 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { CarritoContext } from "../context/CarritoContext"; // Importamos contexto real
+import { CarritoContext } from "../context/CarritoContext";
+import productsData from "../data/productsData"; // Fallback inicial
 import "../App.css";
 
 interface FormData {
@@ -16,7 +17,6 @@ interface FormData {
 const Checkout: React.FC = () => {
   const navigate = useNavigate();
   const { usuario, login } = useAuth();
-  // Usamos el carrito real para calcular total y items
   const { carrito, total, vaciarCarrito } = useContext(CarritoContext)!;
 
   const [formData, setFormData] = useState<FormData>({
@@ -47,6 +47,25 @@ const Checkout: React.FC = () => {
     e.preventDefault();
     if (!validarFormulario()) return;
 
+    // ✅ DESCONTAR STOCK
+    // 1. Obtener inventario actual (LS o Data inicial)
+    const inventarioLS = localStorage.getItem("productos");
+    let inventarioActual = inventarioLS ? JSON.parse(inventarioLS) : productsData;
+
+    // 2. Recorrer carrito y restar
+    carrito.forEach((itemCarrito) => {
+      const productoEnInventario = inventarioActual.find((p: any) => p.id === itemCarrito.id);
+      if (productoEnInventario) {
+        // Restar cantidad comprada, mínimo 0
+        productoEnInventario.stock = Math.max(0, (productoEnInventario.stock || 0) - itemCarrito.cantidad);
+      }
+    });
+
+    // 3. Guardar inventario actualizado
+    localStorage.setItem("productos", JSON.stringify(inventarioActual));
+
+
+    // Lógica de Pedido y Puntos (ya existente)
     const nuevaCompra = {
       id: `ORD-${Date.now()}`,
       fecha: new Date().toLocaleDateString(),
@@ -54,29 +73,23 @@ const Checkout: React.FC = () => {
       items: carrito
     };
 
-    // Guardar en historial
     if (usuario?.email) {
       const key = `historial_${usuario.email}`;
       const historial = JSON.parse(localStorage.getItem(key) || "[]");
       historial.push(nuevaCompra);
       localStorage.setItem(key, JSON.stringify(historial));
 
-      // ✅ Lógica de Gamificación: Sumar Puntos (1 punto por cada $100)
       const puntosGanados = Math.floor(total / 100);
       const nuevosPuntos = (usuario.puntos || 0) + puntosGanados;
       
-      // Actualizar usuario en localStorage y Contexto
       const usuarios = JSON.parse(localStorage.getItem("usuarios") || "[]");
       const idx = usuarios.findIndex((u: any) => u.email === usuario.email);
-      
       if (idx !== -1) {
         usuarios[idx].puntos = nuevosPuntos;
-        // Subir de nivel si corresponde
         if (nuevosPuntos > 1000) usuarios[idx].nivel = "Pro Gamer";
         if (nuevosPuntos > 5000) usuarios[idx].nivel = "Leyenda";
-        
         localStorage.setItem("usuarios", JSON.stringify(usuarios));
-        login(usuarios[idx]); // Refrescar sesión con nuevos puntos
+        login(usuarios[idx]);
       }
     }
 

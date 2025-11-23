@@ -1,8 +1,7 @@
 import React, { createContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 
-
-// 📦 Tipo de producto
+// 📦 Tipo de producto actualizado con stock
 export interface Producto {
   id: number;
   nombre: string;
@@ -10,9 +9,9 @@ export interface Producto {
   precio: number;
   imagen?: string;
   cantidad: number;
+  stock?: number; // Campo opcional por compatibilidad
 }
 
-// 🧩 Tipo del contexto
 export interface CarritoContextType {
   carrito: Producto[];
   agregarAlCarrito: (producto: Producto) => void;
@@ -23,7 +22,6 @@ export interface CarritoContextType {
   total: number;
 }
 
-// ✅ Creación del contexto
 export const CarritoContext = createContext<CarritoContextType | undefined>(undefined);
 
 interface CarritoProviderProps {
@@ -43,7 +41,14 @@ export const CarritoProvider: React.FC<CarritoProviderProps> = ({ children }) =>
   const agregarAlCarrito = (producto: Producto) => {
     setCarrito((prev) => {
       const existe = prev.find((p) => p.id === producto.id);
+      const stockDisponible = producto.stock ?? 999; // Si no trae stock, asumimos infinito
+
       if (existe) {
+        // ✅ VALIDACIÓN DE STOCK
+        if (existe.cantidad >= stockDisponible) {
+          alert(`¡Ups! Solo quedan ${stockDisponible} unidades de este producto.`);
+          return prev;
+        }
         return prev.map((p) =>
           p.id === producto.id ? { ...p, cantidad: p.cantidad + 1 } : p
         );
@@ -54,7 +59,18 @@ export const CarritoProvider: React.FC<CarritoProviderProps> = ({ children }) =>
 
   const incrementarCantidad = (id: number) => {
     setCarrito((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, cantidad: p.cantidad + 1 } : p))
+      prev.map((p) => {
+        if (p.id === id) {
+           // Validamos stock interno del item en el carrito si es que lo tiene guardado
+           const stockMax = p.stock ?? 999;
+           if (p.cantidad >= stockMax) {
+             alert("No hay más stock disponible.");
+             return p;
+           }
+           return { ...p, cantidad: p.cantidad + 1 };
+        }
+        return p;
+      })
     );
   };
 
