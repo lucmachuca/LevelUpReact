@@ -11,8 +11,7 @@ interface RegistroForm {
   comuna: string;
   password: string;
   confirmPassword: string;
-  fechaNacimiento: string; // ✅ Nuevo
-  codigoReferido?: string; // ✅ Nuevo
+  fechaNacimiento: string;
 }
 
 const RegistroPage: React.FC = () => {
@@ -25,7 +24,6 @@ const RegistroPage: React.FC = () => {
     password: "",
     confirmPassword: "",
     fechaNacimiento: "",
-    codigoReferido: "",
   });
   const [errors, setErrors] = useState<Partial<Record<keyof RegistroForm, string>>>({});
   const [alert, setAlert] = useState<{ type: "success" | "danger"; text: string } | null>(null);
@@ -48,32 +46,26 @@ const RegistroPage: React.FC = () => {
         return;
       }
 
-      // ✅ Lógica de Negocio: Descuento Duoc y Puntos Iniciales
+      // Lógica de Descuento Duoc (se mantiene)
       const esDuoc = form.email.toLowerCase().endsWith("@duoc.cl");
-      const puntosIniciales = form.codigoReferido ? 500 : 0; // 500 pts si usó código
 
       const nuevoUsuario = {
         ...form,
-        rol: "user", // Rol por defecto
-        descuento: esDuoc ? 20 : 0, // 20% si es correo duoc
-        puntos: puntosIniciales,    // Gamificación
-        nivel: "Novato"             // Nivel inicial
+        rol: "user",
+        descuento: esDuoc ? 20 : 0,
       };
 
       usuarios.push(nuevoUsuario);
       localStorage.setItem("usuarios", JSON.stringify(usuarios));
 
-      // Mensaje personalizado según beneficios
       let msg = "✅ Registro completado.";
       if (esDuoc) msg += " ¡Tienes 20% OFF por ser Duoc!";
-      if (puntosIniciales > 0) msg += " +500 Puntos por referido.";
 
       setAlert({ type: "success", text: msg });
       
-      // Limpiar
       setForm({
         nombre: "", email: "", telefono: "", region: "", comuna: "",
-        password: "", confirmPassword: "", fechaNacimiento: "", codigoReferido: ""
+        password: "", confirmPassword: "", fechaNacimiento: ""
       });
     } else {
       setAlert({ type: "danger", text: "Revisa los campos marcados." });
@@ -88,7 +80,6 @@ const RegistroPage: React.FC = () => {
 
       <form className="bg-dark border border-success p-4 rounded shadow" onSubmit={onSubmit} noValidate>
         <div className="row g-3">
-          {/* Nombre y Email */}
           <div className="col-md-6">
             <label className="form-label">Nombre completo</label>
             <input name="nombre" type="text" className="form-control bg-dark text-light border-success" value={form.nombre} onChange={onChange} />
@@ -100,7 +91,6 @@ const RegistroPage: React.FC = () => {
             {errors.email && <small className="text-danger">{errors.email}</small>}
           </div>
 
-          {/* ✅ Nuevo: Fecha Nacimiento */}
           <div className="col-md-6">
             <label className="form-label">Fecha de Nacimiento</label>
             <input name="fechaNacimiento" type="date" className="form-control bg-dark text-light border-success" value={form.fechaNacimiento} onChange={onChange} />
@@ -112,7 +102,6 @@ const RegistroPage: React.FC = () => {
             <input name="telefono" type="tel" className="form-control bg-dark text-light border-success" value={form.telefono} onChange={onChange} />
           </div>
 
-          {/* Región y Comuna */}
           <div className="col-md-6">
             <label className="form-label">Región</label>
             <select name="region" className="form-select bg-dark text-light border-success" value={form.region} onChange={onChange}>
@@ -130,7 +119,6 @@ const RegistroPage: React.FC = () => {
             {errors.comuna && <small className="text-danger">{errors.comuna}</small>}
           </div>
 
-          {/* Contraseñas */}
           <div className="col-md-6">
             <label className="form-label">Contraseña</label>
             <input name="password" type="password" className="form-control bg-dark text-light border-success" value={form.password} onChange={onChange} />
@@ -140,12 +128,6 @@ const RegistroPage: React.FC = () => {
             <label className="form-label">Confirmar contraseña</label>
             <input name="confirmPassword" type="password" className="form-control bg-dark text-light border-success" value={form.confirmPassword} onChange={onChange} />
             {errors.confirmPassword && <small className="text-danger">{errors.confirmPassword}</small>}
-          </div>
-
-          {/* ✅ Nuevo: Código Referido */}
-          <div className="col-12">
-            <label className="form-label text-warning">¿Tienes un código de referido? (Opcional)</label>
-            <input name="codigoReferido" type="text" className="form-control bg-dark text-light border-warning" placeholder="Ingresa código para ganar puntos extra" value={form.codigoReferido} onChange={onChange} />
           </div>
         </div>
 

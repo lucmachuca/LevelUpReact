@@ -1,18 +1,16 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
-// ✅ Interfaz actualizada con los nuevos campos de negocio
+// ✅ Interfaz limpia (sin gamificación)
 interface Usuario {
   nombre: string;
   email: string;
-  region?: string;
-  comuna?: string;
   rol?: "user" | "admin";
-  // Nuevos campos opcionales
+  // Datos personales
   telefono?: string;
   fechaNacimiento?: string;
-  descuento?: number; // Porcentaje de descuento
-  puntos?: number;    // Puntos de gamificación
-  nivel?: string;     // Nivel (Novato, Pro, Leyenda)
+  region?: string;
+  comuna?: string;
+  descuento?: number; // Mantenemos el descuento Duoc, ya que es útil
 }
 
 interface AuthContextType {
@@ -48,7 +46,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   );
 };
 
-// Hook personalizado
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth debe usarse dentro de AuthProvider");
