@@ -11,6 +11,8 @@ interface RegistroForm {
   comuna: string;
   password: string;
   confirmPassword: string;
+  fechaNacimiento: string; // ✅ Nuevo
+  codigoReferido?: string; // ✅ Nuevo
 }
 
 const RegistroPage: React.FC = () => {
@@ -22,6 +24,8 @@ const RegistroPage: React.FC = () => {
     comuna: "",
     password: "",
     confirmPassword: "",
+    fechaNacimiento: "",
+    codigoReferido: "",
   });
   const [errors, setErrors] = useState<Partial<Record<keyof RegistroForm, string>>>({});
   const [alert, setAlert] = useState<{ type: "success" | "danger"; text: string } | null>(null);
@@ -37,37 +41,39 @@ const RegistroPage: React.FC = () => {
     setErrors(val);
 
     if (Object.keys(val).length === 0) {
-      // Guardar usuario en localStorage
       const usuarios = JSON.parse(localStorage.getItem("usuarios") || "[]");
 
-      const existe = usuarios.some((u: any) => u.email === form.email);
-      if (existe) {
+      if (usuarios.some((u: any) => u.email === form.email)) {
         setAlert({ type: "danger", text: "⚠️ Este correo ya está registrado." });
         return;
       }
 
+      // ✅ Lógica de Negocio: Descuento Duoc y Puntos Iniciales
+      const esDuoc = form.email.toLowerCase().endsWith("@duoc.cl");
+      const puntosIniciales = form.codigoReferido ? 500 : 0; // 500 pts si usó código
+
       const nuevoUsuario = {
-        nombre: form.nombre,
-        email: form.email,
-        telefono: form.telefono,
-        region: form.region,
-        comuna: form.comuna,
-        password: form.password,
-        rol: "user",
+        ...form,
+        rol: "user", // Rol por defecto
+        descuento: esDuoc ? 20 : 0, // 20% si es correo duoc
+        puntos: puntosIniciales,    // Gamificación
+        nivel: "Novato"             // Nivel inicial
       };
 
       usuarios.push(nuevoUsuario);
       localStorage.setItem("usuarios", JSON.stringify(usuarios));
 
-      setAlert({ type: "success", text: "✅ Registro completado. Ya puedes iniciar sesión." });
+      // Mensaje personalizado según beneficios
+      let msg = "✅ Registro completado.";
+      if (esDuoc) msg += " ¡Tienes 20% OFF por ser Duoc!";
+      if (puntosIniciales > 0) msg += " +500 Puntos por referido.";
+
+      setAlert({ type: "success", text: msg });
+      
+      // Limpiar
       setForm({
-        nombre: "",
-        email: "",
-        telefono: "",
-        region: "",
-        comuna: "",
-        password: "",
-        confirmPassword: "",
+        nombre: "", email: "", telefono: "", region: "", comuna: "",
+        password: "", confirmPassword: "", fechaNacimiento: "", codigoReferido: ""
       });
     } else {
       setAlert({ type: "danger", text: "Revisa los campos marcados." });
@@ -76,93 +82,74 @@ const RegistroPage: React.FC = () => {
 
   return (
     <section className="container py-5 text-light" style={{ maxWidth: 720 }}>
-      <h1 className="text-center text-neon-green glow-text mb-4">Crear cuenta</h1>
+      <h1 className="text-center text-neon-green glow-text mb-4">Crear cuenta Level-Up</h1>
 
       {alert && <AlertMessage type={alert.type}>{alert.text}</AlertMessage>}
 
       <form className="bg-dark border border-success p-4 rounded shadow" onSubmit={onSubmit} noValidate>
         <div className="row g-3">
+          {/* Nombre y Email */}
           <div className="col-md-6">
-            <label htmlFor="nombre" className="form-label">Nombre completo</label>
-            <input
-              id="nombre" name="nombre" type="text"
-              className={`form-control bg-dark text-light border ${errors.nombre ? "border-danger" : "border-success"}`}
-              value={form.nombre} onChange={onChange}
-            />
+            <label className="form-label">Nombre completo</label>
+            <input name="nombre" type="text" className="form-control bg-dark text-light border-success" value={form.nombre} onChange={onChange} />
             {errors.nombre && <small className="text-danger">{errors.nombre}</small>}
           </div>
-
           <div className="col-md-6">
-            <label htmlFor="email" className="form-label">Correo electrónico</label>
-            <input
-              id="email" name="email" type="email"
-              className={`form-control bg-dark text-light border ${errors.email ? "border-danger" : "border-success"}`}
-              value={form.email} onChange={onChange}
-            />
+            <label className="form-label">Correo (Usa @duoc.cl para dcto)</label>
+            <input name="email" type="email" className="form-control bg-dark text-light border-success" value={form.email} onChange={onChange} />
             {errors.email && <small className="text-danger">{errors.email}</small>}
           </div>
 
+          {/* ✅ Nuevo: Fecha Nacimiento */}
           <div className="col-md-6">
-            <label htmlFor="telefono" className="form-label">Teléfono (opcional)</label>
-            <input
-              id="telefono" name="telefono" type="tel"
-              className="form-control bg-dark text-light border border-success"
-              value={form.telefono || ""} onChange={onChange}
-            />
+            <label className="form-label">Fecha de Nacimiento</label>
+            <input name="fechaNacimiento" type="date" className="form-control bg-dark text-light border-success" value={form.fechaNacimiento} onChange={onChange} />
+            {errors.fechaNacimiento && <small className="text-danger">{errors.fechaNacimiento}</small>}
           </div>
 
           <div className="col-md-6">
-            <label htmlFor="region" className="form-label">Región</label>
-            <select
-              id="region" name="region"
-              className={`form-select bg-dark text-light border ${errors.region ? "border-danger" : "border-success"}`}
-              value={form.region} onChange={onChange}
-            >
-              <option value="">Selecciona una región</option>
-              {Object.keys(REGIONES_COMUNAS).map((r) => (
-                <option key={r} value={r}>{r}</option>
-              ))}
+            <label className="form-label">Teléfono (opcional)</label>
+            <input name="telefono" type="tel" className="form-control bg-dark text-light border-success" value={form.telefono} onChange={onChange} />
+          </div>
+
+          {/* Región y Comuna */}
+          <div className="col-md-6">
+            <label className="form-label">Región</label>
+            <select name="region" className="form-select bg-dark text-light border-success" value={form.region} onChange={onChange}>
+              <option value="">Selecciona...</option>
+              {Object.keys(REGIONES_COMUNAS).map((r) => <option key={r} value={r}>{r}</option>)}
             </select>
             {errors.region && <small className="text-danger">{errors.region}</small>}
           </div>
-
           <div className="col-md-6">
-            <label htmlFor="comuna" className="form-label">Comuna</label>
-            <select
-              id="comuna" name="comuna"
-              className={`form-select bg-dark text-light border ${errors.comuna ? "border-danger" : "border-success"}`}
-              value={form.comuna} onChange={onChange} disabled={!form.region}
-            >
-              <option value="">Selecciona una comuna</option>
-              {comunas.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
+            <label className="form-label">Comuna</label>
+            <select name="comuna" className="form-select bg-dark text-light border-success" value={form.comuna} onChange={onChange} disabled={!form.region}>
+              <option value="">Selecciona...</option>
+              {comunas.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
             {errors.comuna && <small className="text-danger">{errors.comuna}</small>}
           </div>
 
+          {/* Contraseñas */}
           <div className="col-md-6">
-            <label htmlFor="password" className="form-label">Contraseña</label>
-            <input
-              id="password" name="password" type="password"
-              className={`form-control bg-dark text-light border ${errors.password ? "border-danger" : "border-success"}`}
-              value={form.password} onChange={onChange}
-            />
+            <label className="form-label">Contraseña</label>
+            <input name="password" type="password" className="form-control bg-dark text-light border-success" value={form.password} onChange={onChange} />
             {errors.password && <small className="text-danger">{errors.password}</small>}
           </div>
-
           <div className="col-md-6">
-            <label htmlFor="confirmPassword" className="form-label">Confirmar contraseña</label>
-            <input
-              id="confirmPassword" name="confirmPassword" type="password"
-              className={`form-control bg-dark text-light border ${errors.confirmPassword ? "border-danger" : "border-success"}`}
-              value={form.confirmPassword} onChange={onChange}
-            />
+            <label className="form-label">Confirmar contraseña</label>
+            <input name="confirmPassword" type="password" className="form-control bg-dark text-light border-success" value={form.confirmPassword} onChange={onChange} />
             {errors.confirmPassword && <small className="text-danger">{errors.confirmPassword}</small>}
+          </div>
+
+          {/* ✅ Nuevo: Código Referido */}
+          <div className="col-12">
+            <label className="form-label text-warning">¿Tienes un código de referido? (Opcional)</label>
+            <input name="codigoReferido" type="text" className="form-control bg-dark text-light border-warning" placeholder="Ingresa código para ganar puntos extra" value={form.codigoReferido} onChange={onChange} />
           </div>
         </div>
 
-        <button type="submit" className="btn btn-hero w-100 mt-3">Registrar</button>
+        <button type="submit" className="btn btn-hero w-100 mt-4">Registrarme</button>
       </form>
     </section>
   );

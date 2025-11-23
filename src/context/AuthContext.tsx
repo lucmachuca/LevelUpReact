@@ -1,11 +1,18 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
+// ✅ Interfaz actualizada con los nuevos campos de negocio
 interface Usuario {
   nombre: string;
   email: string;
   region?: string;
   comuna?: string;
   rol?: "user" | "admin";
+  // Nuevos campos opcionales
+  telefono?: string;
+  fechaNacimiento?: string;
+  descuento?: number; // Porcentaje de descuento
+  puntos?: number;    // Puntos de gamificación
+  nivel?: string;     // Nivel (Novato, Pro, Leyenda)
 }
 
 interface AuthContextType {
