@@ -1,29 +1,36 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import productsData from "../data/productsData";
 import ProductCard from "../components/ProductCard";
 
 const Productos: React.FC = () => {
   const [productos, setProductos] = useState(productsData);
+  const [categorias, setCategorias] = useState<string[]>([]); // ✅ Estado para lista de categorías
   const [busqueda, setBusqueda] = useState("");
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("Todas");
 
-  // ✅ Cargar productos mezclando estáticos con stock actualizado de localStorage
   useEffect(() => {
+    // 1. Cargar Productos (Stock actualizado)
     const productosGuardados = localStorage.getItem("productos");
     if (productosGuardados) {
       setProductos(JSON.parse(productosGuardados));
     } else {
-      // Si no hay nada en LS, inicializamos LS con los datos base para tener el stock
       localStorage.setItem("productos", JSON.stringify(productsData));
       setProductos(productsData);
     }
+
+    // 2. ✅ Cargar Categorías (incluyendo las nuevas creadas en Admin)
+    const categoriasGuardadas = localStorage.getItem("categorias");
+    if (categoriasGuardadas) {
+      setCategorias(["Todas", ...JSON.parse(categoriasGuardadas)]);
+    } else {
+      // Si no existen, generarlas desde los productos base
+      const catsBase = Array.from(new Set(productsData.map((p) => p.categoria)));
+      localStorage.setItem("categorias", JSON.stringify(catsBase));
+      setCategorias(["Todas", ...catsBase]);
+    }
   }, []);
 
-  const categorias = useMemo(() => {
-    const cats = Array.from(new Set(productos.map((p) => p.categoria)));
-    return ["Todas", ...cats];
-  }, [productos]);
-
+  // Filtrado
   const productosFiltrados = productos.filter((producto) => {
     const coincideNombre = producto.nombre.toLowerCase().includes(busqueda.toLowerCase());
     const coincideCategoria = categoriaSeleccionada === "Todas" || producto.categoria === categoriaSeleccionada;
@@ -34,6 +41,7 @@ const Productos: React.FC = () => {
     <div className="container py-5 text-light">
       <h1 className="text-center mb-4 text-neon-green glow-text">Catálogo de Productos</h1>
 
+      {/* Filtros */}
       <div className="row mb-5 g-3 justify-content-center">
         <div className="col-md-6">
           <input
@@ -50,6 +58,7 @@ const Productos: React.FC = () => {
             value={categoriaSeleccionada}
             onChange={(e) => setCategoriaSeleccionada(e.target.value)}
           >
+            {/* ✅ Renderiza las categorías dinámicas */}
             {categorias.map((cat) => (
               <option key={cat} value={cat}>{cat}</option>
             ))}
@@ -57,6 +66,7 @@ const Productos: React.FC = () => {
         </div>
       </div>
 
+      {/* Listado */}
       <div className="row g-4 justify-content-center">
         {productosFiltrados.length > 0 ? (
           productosFiltrados.map((producto) => (
