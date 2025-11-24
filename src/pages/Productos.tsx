@@ -1,82 +1,75 @@
-import React, { useState, useEffect } from "react";
-import productsData from "../data/productsData";
+import React, { useState, useEffect, useMemo } from "react";
 import ProductCard from "../components/ProductCard";
+import { productService } from "../services/ProductService"; // ✅ Usamos el servicio
+import { Producto } from "../context/CarritoContext";
 
 const Productos: React.FC = () => {
-  const [productos, setProductos] = useState(productsData);
-  const [categorias, setCategorias] = useState<string[]>([]); // ✅ Estado para lista de categorías
+  const [productos, setProductos] = useState<Producto[]>([]);
+  const [loading, setLoading] = useState(true);
   const [busqueda, setBusqueda] = useState("");
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("Todas");
 
+  // ✅ Cargar datos reales del Backend
   useEffect(() => {
-    // 1. Cargar Productos (Stock actualizado)
-    const productosGuardados = localStorage.getItem("productos");
-    if (productosGuardados) {
-      setProductos(JSON.parse(productosGuardados));
-    } else {
-      localStorage.setItem("productos", JSON.stringify(productsData));
-      setProductos(productsData);
-    }
-
-    // 2. ✅ Cargar Categorías (incluyendo las nuevas creadas en Admin)
-    const categoriasGuardadas = localStorage.getItem("categorias");
-    if (categoriasGuardadas) {
-      setCategorias(["Todas", ...JSON.parse(categoriasGuardadas)]);
-    } else {
-      // Si no existen, generarlas desde los productos base
-      const catsBase = Array.from(new Set(productsData.map((p) => p.categoria)));
-      localStorage.setItem("categorias", JSON.stringify(catsBase));
-      setCategorias(["Todas", ...catsBase]);
-    }
+    const cargar = async () => {
+      try {
+        const data = await productService.getAll();
+        // Aseguramos que cada producto tenga la propiedad 'cantidad' en 0 o 1 si es necesario
+        const productosListos = data.map(p => ({ ...p, cantidad: 0 }));
+        setProductos(productosListos);
+      } catch (error) {
+        console.error("Error conectando al backend:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    cargar();
   }, []);
 
-  // Filtrado
-  const productosFiltrados = productos.filter((producto) => {
-    const coincideNombre = producto.nombre.toLowerCase().includes(busqueda.toLowerCase());
-    const coincideCategoria = categoriaSeleccionada === "Todas" || producto.categoria === categoriaSeleccionada;
-    return coincideNombre && coincideCategoria;
+  // Filtros (igual que antes pero con datos dinámicos)
+  const categorias = useMemo(() => {
+    const cats = Array.from(new Set(productos.map((p) => p.categoriaProducto)));
+    return ["Todas", ...cats];
+  }, [productos]);
+
+  const productosFiltrados = productos.filter((p) => {
+    const matchNombre = p.nombreProducto.toLowerCase().includes(busqueda.toLowerCase());
+    const matchCat = categoriaSeleccionada === "Todas" || p.categoriaProducto === categoriaSeleccionada;
+    return matchNombre && matchCat;
   });
+
+  if (loading) return <div className="text-center py-5 text-light">Cargando catálogo...</div>;
 
   return (
     <div className="container py-5 text-light">
-      <h1 className="text-center mb-4 text-neon-green glow-text">Catálogo de Productos</h1>
-
-      {/* Filtros */}
+      <h1 className="text-center mb-4 text-neon-green glow-text">Catálogo</h1>
+      
       <div className="row mb-5 g-3 justify-content-center">
         <div className="col-md-6">
-          <input
-            type="text"
-            className="form-control bg-dark text-light border-success"
-            placeholder="🔍 Buscar producto..."
+          <input 
+            className="form-control bg-dark text-light border-success" 
+            placeholder="🔍 Buscar..." 
             value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
+            onChange={e => setBusqueda(e.target.value)}
           />
         </div>
         <div className="col-md-4">
-          <select
+          <select 
             className="form-select bg-dark text-light border-success"
             value={categoriaSeleccionada}
-            onChange={(e) => setCategoriaSeleccionada(e.target.value)}
+            onChange={e => setCategoriaSeleccionada(e.target.value)}
           >
-            {/* ✅ Renderiza las categorías dinámicas */}
-            {categorias.map((cat) => (
-              <option key={cat} value={cat}>{cat}</option>
-            ))}
+            {categorias.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
       </div>
 
-      {/* Listado */}
       <div className="row g-4 justify-content-center">
-        {productosFiltrados.length > 0 ? (
-          productosFiltrados.map((producto) => (
-            <div key={producto.id} className="col-12 col-sm-6 col-md-4 col-lg-3">
-              <ProductCard producto={producto} />
-            </div>
-          ))
-        ) : (
-          <p className="text-center text-muted fs-5">No se encontraron productos con esos criterios.</p>
-        )}
+        {productosFiltrados.map(p => (
+          <div key={p.id} className="col-12 col-sm-6 col-md-4 col-lg-3">
+            <ProductCard producto={p} />
+          </div>
+        ))}
       </div>
     </div>
   );

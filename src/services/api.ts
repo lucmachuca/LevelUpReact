@@ -1,28 +1,24 @@
-export const API_URL = "http://localhost:8080/api";
+import axios from 'axios';
 
-export async function apiFetch(path: string, options: RequestInit = {}) {
-  const token = localStorage.getItem("token");
+const API_URL = 'http://localhost:8080/api';
 
-  const headers: HeadersInit = {
-    "Content-Type": "application/json",
-    ...(token && { Authorization: `Bearer ${token}` }),
-  };
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-  const response = await fetch(`${API_URL}${path}`, {
-    ...options,
-    headers,
-  });
+// Interceptor: Pega el token en cada petición si existe
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
-  if (!response.ok) {
-    let errorMessage = "Error en la solicitud";
-
-    try {
-      const data = await response.json();
-      errorMessage = data.message || errorMessage;
-    } catch {}
-
-    throw new Error(errorMessage);
-  }
-
-  return response.json();
-}
+export default api;

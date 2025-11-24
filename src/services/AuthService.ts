@@ -1,23 +1,25 @@
-import { apiFetch } from "./api";
+import api from './api';
 
-// registrar usuario
-export function registrarUsuario(data: {
+// Interfaz exacta de lo que espera el Backend Java
+export interface RegisterData {
   nombre: string;
   apellido: string;
   correo: string;
   contrasena: string;
-  edad: number;
-}) {
-  return apiFetch("/auth/registro", {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
+  fechaNacimiento: string; // "YYYY-MM-DD"
+  telefono?: string;
+  region?: string;
+  comuna?: string;
 }
 
-// iniciar sesión
-export function iniciarSesion(data: { correo: string; contrasena: string }) {
-  return apiFetch("/auth/login", {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
-}
+export const authService = {
+  registro: async (data: RegisterData) => {
+    const response = await api.post('/auth/registro', data);
+    return response.data;
+  },
+
+  login: async (credenciales: { correo: string; contrasena: string }) => {
+    const response = await api.post('/auth/login', credenciales);
+    return response.data; // Devuelve { token, email, rol, etc. }
+  }
+};

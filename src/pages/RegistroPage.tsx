@@ -1,214 +1,114 @@
 import React, { useMemo, useState } from "react";
 import AlertMessage from "../components/AlertMessage";
-import { registrarUsuario } from "../services/AuthService";
+import { authService } from "../services/AuthService"; // Usamos el nuevo servicio con axios
 import { REGIONES_COMUNAS } from "../data/comunasPorRegion";
-import { calcularEdad } from "../utils/ValidationRegistro";
-
-interface RegistroForm {
-  nombre: string;
-  apellido: string;
-  correo: string;
-  contrasena: string;
-  confirmarContrasena: string;
-
-  // campos visuales
-  region?: string;
-  comuna?: string;
-  fechaNacimiento?: string;
-  telefono?: string;
-}
 
 const RegistroPage: React.FC = () => {
-  const [form, setForm] = useState<RegistroForm>({
+  const [form, setForm] = useState({
     nombre: "",
     apellido: "",
     correo: "",
     contrasena: "",
-    confirmarContrasena: "",
-    region: "",
-    comuna: "",
+    confirmar: "",
     fechaNacimiento: "",
     telefono: "",
+    region: "",
+    comuna: ""
   });
+  const [alert, setAlert] = useState<{ type: string; text: string } | null>(null);
 
-  const [alert, setAlert] = useState<{
-    type: "success" | "danger";
-    text: string;
-  } | null>(null);
-  const [errors, setErrors] = useState<Partial<RegistroForm>>({});
+  const comunas = useMemo(() => form.region ? REGIONES_COMUNAS[form.region] || [] : [], [form.region]);
 
-  const comunas = useMemo(
-    () => (form.region ? REGIONES_COMUNAS[form.region] || [] : []),
-    [form.region]
-  );
-
-  const onChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e: any) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const newErrors: Partial<RegistroForm> = {};
-
-    // validaciones simples del front
-    if (!form.nombre.trim()) newErrors.nombre = "Ingresa tu nombre";
-    if (!form.apellido.trim()) newErrors.apellido = "Ingresa tu apellido";
-
-    if (!form.correo.trim()) newErrors.correo = "Ingresa un correo válido";
-    else if (!/\S+@\S+\.\S+/.test(form.correo))
-      newErrors.correo = "Correo inválido";
-
-    if (!form.contrasena.trim()) newErrors.contrasena = "Crea una contraseña";
-    if (form.contrasena !== form.confirmarContrasena)
-      newErrors.confirmarContrasena = "Las contraseñas no coinciden";
-
-    // calcular edad con la función importada
-    const edadCalculada = form.fechaNacimiento
-      ? calcularEdad(form.fechaNacimiento)
-      : 0;
-
-    if (edadCalculada < 18) {
-      newErrors.fechaNacimiento = "Debes tener al menos 18 años";
+    
+    // Validaciones básicas
+    if (form.contrasena !== form.confirmar) {
+      setAlert({ type: "danger", text: "Las contraseñas no coinciden" });
+      return;
     }
-
-    setErrors(newErrors);
-
-    if (Object.keys(newErrors).length > 0) {
-      setAlert({ type: "danger", text: "Revisa los campos marcados." });
+    if (!form.fechaNacimiento) {
+      setAlert({ type: "danger", text: "Fecha de nacimiento requerida" });
       return;
     }
 
     try {
-      // se envían solo los campos que backend espera
-      await registrarUsuario({
+      // Envío al backend
+      await authService.registro({
         nombre: form.nombre,
         apellido: form.apellido,
         correo: form.correo,
         contrasena: form.contrasena,
-        edad: edadCalculada,
+        fechaNacimiento: form.fechaNacimiento, // Enviar string directo "YYYY-MM-DD"
+        telefono: form.telefono,
+        region: form.region,
+        comuna: form.comuna
       });
 
-      setAlert({
-        type: "success",
-        text: "Registro exitoso. Ahora inicia sesión.",
-      });
+      setAlert({ type: "success", text: "¡Registro exitoso! Redirigiendo..." });
+      setTimeout(() => window.location.href = "/login", 2000);
 
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 1500);
     } catch (error: any) {
-      setAlert({
-        type: "danger",
-        text: error.message || "No se pudo registrar tu cuenta.",
-      });
+      console.error(error);
+      // Axios pone el mensaje de error del backend en error.response.data
+      const msg = error.response?.data?.message || "Error al registrar usuario";
+      setAlert({ type: "danger", text: msg });
     }
   };
 
   return (
     <section className="container py-5 text-light" style={{ maxWidth: 720 }}>
-      <h1 className="text-center text-neon-green glow-text mb-4">
-        Crear cuenta Level-Up
-      </h1>
-
-      {alert && <AlertMessage type={alert.type}>{alert.text}</AlertMessage>}
-
-      <form
-        className="bg-dark border border-success p-4 rounded shadow"
-        onSubmit={onSubmit}
-        noValidate
-      >
+      <h1 className="text-center text-neon-green mb-4">Registro</h1>
+      {alert && <AlertMessage type={alert.type as any}>{alert.text}</AlertMessage>}
+      
+      <form className="bg-dark border border-success p-4 rounded" onSubmit={onSubmit}>
         <div className="row g-3">
-          <div className="col-md-6">
-            <label className="form-label">Nombre</label>
-            <input
-              name="nombre"
-              className="form-control bg-dark text-light border-success"
-              value={form.nombre}
-              onChange={onChange}
-            />
-            {errors.nombre && (
-              <small className="text-danger">{errors.nombre}</small>
-            )}
+          <div className="col-6">
+            <label>Nombre</label>
+            <input name="nombre" className="form-control bg-dark text-light border-success" onChange={handleChange} required />
           </div>
-
-          <div className="col-md-6">
-            <label className="form-label">Apellido</label>
-            <input
-              name="apellido"
-              className="form-control bg-dark text-light border-success"
-              value={form.apellido}
-              onChange={onChange}
-            />
-            {errors.apellido && (
-              <small className="text-danger">{errors.apellido}</small>
-            )}
+          <div className="col-6">
+            <label>Apellido</label>
+            <input name="apellido" className="form-control bg-dark text-light border-success" onChange={handleChange} required />
           </div>
-
-          <div className="col-md-6">
-            <label className="form-label">Correo</label>
-            <input
-              name="correo"
-              type="email"
-              className="form-control bg-dark text-light border-success"
-              value={form.correo}
-              onChange={onChange}
-            />
-            {errors.correo && (
-              <small className="text-danger">{errors.correo}</small>
-            )}
+          <div className="col-12">
+            <label>Correo</label>
+            <input name="correo" type="email" className="form-control bg-dark text-light border-success" onChange={handleChange} required />
           </div>
-
-          <div className="col-md-6">
-            <label className="form-label">Fecha de nacimiento</label>
-            <input
-              name="fechaNacimiento"
-              type="date"
-              className="form-control bg-dark text-light border-success"
-              value={form.fechaNacimiento}
-              onChange={onChange}
-            />
-            {errors.fechaNacimiento && (
-              <small className="text-danger">{errors.fechaNacimiento}</small>
-            )}
+          <div className="col-6">
+            <label>Fecha Nacimiento</label>
+            <input name="fechaNacimiento" type="date" className="form-control bg-dark text-light border-success" onChange={handleChange} required />
           </div>
-
-          <div className="col-md-6">
-            <label className="form-label">Contraseña</label>
-            <input
-              name="contrasena"
-              type="password"
-              className="form-control bg-dark text-light border-success"
-              value={form.contrasena}
-              onChange={onChange}
-            />
-            {errors.contrasena && (
-              <small className="text-danger">{errors.contrasena}</small>
-            )}
+          <div className="col-6">
+            <label>Teléfono</label>
+            <input name="telefono" className="form-control bg-dark text-light border-success" onChange={handleChange} />
           </div>
-
-          <div className="col-md-6">
-            <label className="form-label">Confirmar contraseña</label>
-            <input
-              name="confirmarContrasena"
-              type="password"
-              className="form-control bg-dark text-light border-success"
-              value={form.confirmarContrasena}
-              onChange={onChange}
-            />
-            {errors.confirmarContrasena && (
-              <small className="text-danger">
-                {errors.confirmarContrasena}
-              </small>
-            )}
+          <div className="col-6">
+            <label>Región</label>
+            <select name="region" className="form-select bg-dark text-light border-success" onChange={handleChange}>
+              <option value="">Selecciona...</option>
+              {Object.keys(REGIONES_COMUNAS).map(r => <option key={r} value={r}>{r}</option>)}
+            </select>
+          </div>
+          <div className="col-6">
+            <label>Comuna</label>
+            <select name="comuna" className="form-select bg-dark text-light border-success" onChange={handleChange} disabled={!form.region}>
+              <option value="">Selecciona...</option>
+              {comunas.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+          <div className="col-6">
+            <label>Contraseña</label>
+            <input name="contrasena" type="password" className="form-control bg-dark text-light border-success" onChange={handleChange} required />
+          </div>
+          <div className="col-6">
+            <label>Confirmar</label>
+            <input name="confirmar" type="password" className="form-control bg-dark text-light border-success" onChange={handleChange} required />
           </div>
         </div>
-
-        <button type="submit" className="btn btn-hero w-100 mt-4">
-          Registrarme
-        </button>
+        <button type="submit" className="btn btn-hero w-100 mt-4">Registrarse</button>
       </form>
     </section>
   );
