@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import ProductCard from "../components/ProductCard";
 import { productService } from "../services/ProductService"; // ✅ Usamos el servicio
-import { Producto } from "../context/CarritoContext";
+import type { Producto } from "../context/CarritoContext";
 
 const Productos: React.FC = () => {
   const [productos, setProductos] = useState<Producto[]>([]);
