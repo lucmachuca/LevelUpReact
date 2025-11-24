@@ -1,107 +1,68 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { CarritoContext } from "../context/CarritoContext";
+// 👇 Asegúrate de que esta línea tenga "type"
 import type { CarritoContextType } from "../context/CarritoContext";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "../App.css";
 
 const Carrito: React.FC = () => {
+  const { carrito, total, incrementarCantidad, decrementarCantidad, eliminarDelCarrito, vaciarCarrito } =
+    useContext(CarritoContext) as CarritoContextType;
   const navigate = useNavigate();
-  const {
-    carrito,
-    incrementarCantidad,
-    decrementarCantidad,
-    eliminarDelCarrito,
-    total,
-  } = useContext(CarritoContext) as CarritoContextType;
+
+  if (carrito.length === 0) {
+    return (
+      <div className="container py-5 text-center text-light">
+        <h2>Tu carrito está vacío 🛒</h2>
+        <button className="btn btn-hero mt-3" onClick={() => navigate("/")}>
+          Ver Productos
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div className="page-wrapper container py-5 text-center text-light">
-      <h1 className="display-5 fw-bold text-neon-green glow-text mb-4">
-        🛒 Tu Carrito
-      </h1>
-
-      {carrito.length === 0 ? (
-        <>
-          <p className="text-muted fs-5">Tu carrito está vacío.</p>
-          <button
-            className="btn btn-outline-light mt-3"
-            onClick={() => navigate("/productos")}
-          >
-            🔙 Volver a productos
-          </button>
-        </>
-      ) : (
-        <>
-          <div className="row justify-content-center mb-4">
-            {carrito.map((item) => (
-              <div key={item.id} className="col-12 col-md-6 col-lg-4 mb-4">
-                <div className="card bg-dark border border-success h-100">
-                  {item.imagen && (
-                    <img
-                      src={item.imagen}
-                      alt={item.nombre}
-                      className="card-img-top p-3"
-                      style={{ maxHeight: "180px", objectFit: "contain" }}
-                    />
-                  )}
-                  <div className="card-body">
-                    <h5 className="card-title">{item.nombre}</h5>
-                    <p className="text-muted mb-2">{item.categoria}</p>
-                    <p className="fw-bold text-success mb-2">
-                      ${item.precio.toLocaleString()}
-                    </p>
-
-                    <div className="d-flex justify-content-center align-items-center gap-2 mb-3">
-                      <button
-                        className="btn btn-outline-light"
-                        onClick={() => decrementarCantidad(item.id)}
-                        title="Restar 1"
-                      >
-                        −
-                      </button>
-                      <span className="px-3">{item.cantidad}</span>
-                      <button
-                        className="btn btn-outline-light"
-                        onClick={() => incrementarCantidad(item.id)}
-                        title="Sumar 1"
-                      >
-                        +
-                      </button>
-                    </div>
-
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => eliminarDelCarrito(item.id)}
-                    >
-                      🗑️ Quitar producto
-                    </button>
-                  </div>
-                </div>
+    <div className="container py-5 text-light">
+      <h1 className="mb-4 text-center text-neon-green glow-text">Carrito de Compras</h1>
+      <div className="row">
+        <div className="col-md-8">
+          {carrito.map((item) => (
+            <div key={item.id} className="card bg-dark border-success mb-3 p-3 flex-row align-items-center">
+              <img
+                src={item.imagenUrl}
+                alt={item.nombreProducto}
+                className="img-fluid rounded"
+                style={{ width: "80px", height: "80px", objectFit: "contain" }}
+              />
+              <div className="flex-grow-1 ms-3">
+                <h5 className="text-neon-green mb-1">{item.nombreProducto}</h5>
+                <p className="mb-0 text-muted">${item.precioProducto.toLocaleString()}</p>
               </div>
-            ))}
-          </div>
-
-          <h3 className="text-neon-green mb-4">
-            💰 Total: ${total.toLocaleString()}
-          </h3>
-
-          <div className="d-flex justify-content-center gap-3">
-            <button
-              className="btn btn-outline-light"
-              onClick={() => navigate("/productos")}
-            >
-              🔙 Seguir comprando
+              <div className="d-flex align-items-center gap-2">
+                <button className="btn btn-sm btn-outline-secondary" onClick={() => decrementarCantidad(item.id)}>-</button>
+                <span className="fw-bold">{item.cantidad}</span>
+                <button className="btn btn-sm btn-outline-light" onClick={() => incrementarCantidad(item.id)}>+</button>
+              </div>
+              <button className="btn btn-danger ms-3" onClick={() => eliminarDelCarrito(item.id)}>🗑️</button>
+            </div>
+          ))}
+          <button className="btn btn-outline-danger mt-3" onClick={vaciarCarrito}>
+            Vaciar Carrito
+          </button>
+        </div>
+        <div className="col-md-4">
+          <div className="card bg-dark border-success p-4 sticky-top">
+            <h3 className="text-neon-green">Resumen</h3>
+            <hr className="border-light" />
+            <div className="d-flex justify-content-between mb-3">
+              <span>Total:</span>
+              <span className="fw-bold fs-4">${total.toLocaleString()}</span>
+            </div>
+            <button className="btn btn-hero w-100" onClick={() => navigate("/checkout")}>
+              Pagar Ahora 💳
             </button>
-            <button
-              className="btn btn-hero"
-              onClick={() => navigate("/checkout")}
-            >
-              💳 Proceder al pago
-            </button>
           </div>
-        </>
-      )}
+        </div>
+      </div>
     </div>
   );
 };
