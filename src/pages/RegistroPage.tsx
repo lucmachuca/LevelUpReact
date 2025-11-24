@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from "react";
 import AlertMessage from "../components/AlertMessage";
-import { authService } from "../services/AuthService"; // Usamos el nuevo servicio con axios
+import { authService } from "../services/AuthService";
 import { REGIONES_COMUNAS } from "../data/comunasPorRegion";
+import { calcularEdad } from "../utils/ValidationRegistro"; // Asumiendo que exportaste esta función o la defines aquí
 
 const RegistroPage: React.FC = () => {
   const [form, setForm] = useState({
@@ -24,24 +25,39 @@ const RegistroPage: React.FC = () => {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validaciones básicas
+    // 1. Validar Contraseñas
     if (form.contrasena !== form.confirmar) {
       setAlert({ type: "danger", text: "Las contraseñas no coinciden" });
       return;
     }
+
+    // 2. Validar Edad (+18)
     if (!form.fechaNacimiento) {
       setAlert({ type: "danger", text: "Fecha de nacimiento requerida" });
       return;
     }
+    
+    // Calcular edad simple
+    const hoy = new Date();
+    const nacimiento = new Date(form.fechaNacimiento);
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const m = hoy.getMonth() - nacimiento.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < nacimiento.getDate())) {
+        edad--;
+    }
+
+    if (edad < 18) {
+      setAlert({ type: "danger", text: "Debes ser mayor de 18 años para registrarte." });
+      return;
+    }
 
     try {
-      // Envío al backend
       await authService.registro({
         nombre: form.nombre,
         apellido: form.apellido,
         correo: form.correo,
         contrasena: form.contrasena,
-        fechaNacimiento: form.fechaNacimiento, // Enviar string directo "YYYY-MM-DD"
+        fechaNacimiento: form.fechaNacimiento,
         telefono: form.telefono,
         region: form.region,
         comuna: form.comuna
@@ -52,8 +68,7 @@ const RegistroPage: React.FC = () => {
 
     } catch (error: any) {
       console.error(error);
-      // Axios pone el mensaje de error del backend en error.response.data
-      const msg = error.response?.data?.message || "Error al registrar usuario";
+      const msg = error.response?.data?.message || "Error al registrar usuario (verifica el correo).";
       setAlert({ type: "danger", text: msg });
     }
   };
@@ -65,6 +80,7 @@ const RegistroPage: React.FC = () => {
       
       <form className="bg-dark border border-success p-4 rounded" onSubmit={onSubmit}>
         <div className="row g-3">
+          {/* Campos existentes... */}
           <div className="col-6">
             <label>Nombre</label>
             <input name="nombre" className="form-control bg-dark text-light border-success" onChange={handleChange} required />
@@ -77,14 +93,26 @@ const RegistroPage: React.FC = () => {
             <label>Correo</label>
             <input name="correo" type="email" className="form-control bg-dark text-light border-success" onChange={handleChange} required />
           </div>
+          
+          {/* Fecha con validación visual */}
           <div className="col-6">
             <label>Fecha Nacimiento</label>
-            <input name="fechaNacimiento" type="date" className="form-control bg-dark text-light border-success" onChange={handleChange} required />
+            <input 
+              name="fechaNacimiento" 
+              type="date" 
+              className="form-control bg-dark text-light border-success" 
+              onChange={handleChange} 
+              required 
+            />
+            <small className="text-muted">Debes ser +18</small>
           </div>
+          
           <div className="col-6">
             <label>Teléfono</label>
             <input name="telefono" className="form-control bg-dark text-light border-success" onChange={handleChange} />
           </div>
+          
+          {/* Región y Comuna */}
           <div className="col-6">
             <label>Región</label>
             <select name="region" className="form-select bg-dark text-light border-success" onChange={handleChange}>
@@ -99,6 +127,7 @@ const RegistroPage: React.FC = () => {
               {comunas.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
+
           <div className="col-6">
             <label>Contraseña</label>
             <input name="contrasena" type="password" className="form-control bg-dark text-light border-success" onChange={handleChange} required />

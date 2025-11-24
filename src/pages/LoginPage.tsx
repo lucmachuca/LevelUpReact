@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { validarLogin } from "../utils/ValidationLogin";
 import AlertMessage from "../components/AlertMessage";
 import { useAuth } from "../context/AuthContext";
+import { authService } from "../services/AuthService"; // ✅ Importar servicio real
 import { useNavigate } from "react-router-dom";
 
 const LoginPage: React.FC = () => {
@@ -15,27 +16,40 @@ const LoginPage: React.FC = () => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validación local básica
     const val = validarLogin(form);
     setErrors(val);
+    if (Object.keys(val).length > 0) return;
 
-    if (Object.keys(val).length === 0) {
-      const usuarios = JSON.parse(localStorage.getItem("usuarios") || "[]");
+    try {
+      // 🚀 Llamada al backend real
+      // Mapeamos los nombres de campos del form a lo que espera el servicio (correo, contrasena)
+      const data = await authService.login({
+        correo: form.email,
+        contrasena: form.password
+      });
 
-      const encontrado = usuarios.find(
-        (u: any) => u.email === form.email && u.password === form.password
-      );
+      // Login en contexto (guarda token y usuario)
+      login(data);
+      
+      setAlert({ type: "success", text: `✅ Bienvenido, ${data.nombreCompleto}` });
+      
+      // Redirección basada en rol
+      setTimeout(() => {
+        if (data.rol === "ADMIN") navigate("/admin");
+        else navigate("/");
+      }, 1000);
 
-      if (encontrado) {
-        login(encontrado);
-        setAlert({ type: "success", text: "✅ Bienvenido de nuevo, " + encontrado.nombre });
-        navigate("/");
-      } else {
-        setAlert({ type: "danger", text: "❌ Usuario o contraseña incorrectos." });
-      }
-    } else {
-      setAlert({ type: "danger", text: "Revisa los campos marcados." });
+    } catch (error: any) {
+      console.error("Error login:", error);
+      // Manejo de error del backend
+      const msg = error.response?.status === 401 
+        ? "❌ Credenciales incorrectas" 
+        : "❌ Error al conectar con el servidor";
+      setAlert({ type: "danger", text: msg });
     }
   };
 
@@ -43,7 +57,7 @@ const LoginPage: React.FC = () => {
     <section className="container py-5 text-light" style={{ maxWidth: 520 }}>
       <h1 className="text-center text-neon-green glow-text mb-4">Iniciar sesión</h1>
 
-      {alert && <AlertMessage type={alert.type}>{alert.text}</AlertMessage>}
+      {alert && <AlertMessage type={alert.type as any}>{alert.text}</AlertMessage>}
 
       <form className="bg-dark border border-success p-4 rounded shadow" onSubmit={onSubmit}>
         <div className="mb-3">
@@ -67,19 +81,6 @@ const LoginPage: React.FC = () => {
         </div>
 
         <button type="submit" className="btn btn-hero w-100">Ingresar</button>
-
-        {/* Acceso rápido admin */}
-        <button
-          type="button"
-          className="btn btn-outline-warning w-100 mt-3"
-          onClick={() => {
-            const admin = { nombre: "Admin", email: "admin@levelup.com", rol: "admin" };
-            login(admin);
-            navigate("/admin");
-          }}
-        >
-          Ingresar como administrador
-        </button>
       </form>
     </section>
   );
