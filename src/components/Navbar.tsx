@@ -67,7 +67,8 @@ const Navbar: React.FC = () => {
             {/* Sesión */}
             {usuario ? (
               <>
-                {usuario.rol === "admin" ? (
+                {/* ✅ CORREGIDO: Rol en mayúsculas "ADMIN" para coincidir con backend */}
+                {usuario.rol === "ADMIN" ? (
                   <li className="nav-item">
                     <Link
                       to="/admin"

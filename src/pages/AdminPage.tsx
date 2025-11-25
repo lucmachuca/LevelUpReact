@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { productService } from "../services/ProductService";
 import { userService } from "../services/UserService"; // ✅ Importamos el servicio de usuarios
 import type { Producto } from "../context/CarritoContext";
-import { REGIONES_COMUNAS } from "../data/comunasPorRegion";
 
 const AdminPage: React.FC = () => {
   const [modo, setModo] = useState<"usuarios" | "productos" | "categorias">("usuarios");
@@ -180,6 +179,18 @@ const AdminPage: React.FC = () => {
               <div className="col-md-6">
                 <label>Email (Correo)</label>
                 <input name="correo" className="form-control" value={formData.correo || ""} onChange={handleChange} />
+              </div>
+
+              {/* ✅ NUEVO CAMPO: Fecha de Nacimiento */}
+              <div className="col-md-6">
+                <label>Fecha de Nacimiento</label>
+                <input 
+                  type="date" 
+                  name="fechaNacimiento" 
+                  className="form-control" 
+                  value={formData.fechaNacimiento || ""} 
+                  onChange={handleChange} 
+                />
               </div>
               
               {/* Campo contraseña: obligatorio al crear, opcional al editar */}

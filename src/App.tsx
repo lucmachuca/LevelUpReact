@@ -1,6 +1,6 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"; // ✅ Importar Navigate
+import { AuthProvider, useAuth } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Productos from "./pages/Productos";
@@ -17,6 +17,18 @@ import PerfilUsuarioPage from "./pages/PerfilUsuarioPage";
 import HistorialComprasPage from "./pages/HistorialComprasPage";
 import AdminPage from "./pages/AdminPage";
 import "./App.css";
+
+// ✅ COMPONENTE DE SEGURIDAD PARA ADMIN
+const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { usuario } = useAuth();
+  
+  // Si no hay usuario o el rol no es ADMIN (en mayúscula)
+  if (!usuario || usuario.rol !== "ADMIN") {
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
+};
 
 const App: React.FC = () => {
   return (
@@ -37,7 +49,16 @@ const App: React.FC = () => {
           <Route path="/registro" element={<RegistroPage />} />
           <Route path="/perfil" element={<PerfilUsuarioPage />} />
           <Route path="/historial" element={<HistorialComprasPage />} />
-          <Route path="/admin" element={<AdminPage />} />
+          
+          {/* ✅ RUTA PROTEGIDA DE ADMIN */}
+          <Route 
+            path="/admin" 
+            element={
+              <AdminRoute>
+                <AdminPage />
+              </AdminRoute>
+            } 
+          />
         </Routes>
         <footer className="footer">
           <p>© 2025 Level-Up Gamer. Todos los derechos reservados.</p>
