@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { productService } from "../services/ProductService";
-import { userService } from "../services/UserService"; // ✅ Importamos el nuevo servicio
+import { userService } from "../services/UserService"; // ✅ Importamos el servicio de usuarios
 import type { Producto } from "../context/CarritoContext";
 import { REGIONES_COMUNAS } from "../data/comunasPorRegion";
 
@@ -12,7 +12,7 @@ const AdminPage: React.FC = () => {
   const [categorias, setCategorias] = useState<any[]>([]); 
 
   const [formData, setFormData] = useState<any>({});
-  const [editId, setEditId] = useState<number | null>(null); // Usamos ID real, no índice
+  const [editId, setEditId] = useState<number | null>(null); // Usamos ID real
 
   useEffect(() => {
     cargarDatos();
@@ -65,12 +65,13 @@ const AdminPage: React.FC = () => {
         if (!formData.nombreCategoria) return;
         
         if (editId) {
-           // ✅ Ahora sí editamos la categoría en el backend
+           // ✅ Editar categoría
            await productService.updateCategoria(editId, {
              nombreCategoria: formData.nombreCategoria,
              descripcionCategoria: formData.descripcionCategoria
            });
         } else {
+           // ✅ Crear categoría
            await productService.createCategoria({ 
              nombreCategoria: formData.nombreCategoria, 
              descripcionCategoria: formData.descripcionCategoria || "" 
@@ -79,15 +80,24 @@ const AdminPage: React.FC = () => {
         alert("Categoría guardada ✅");
       }
       else if (modo === "usuarios") {
-          // ✅ Edición real de usuarios
-          // Ojo: El backend requiere todos los campos en el PUT.
-          // Idealmente deberíamos cargar el usuario completo antes de editar (lo hacemos en cargarParaEditar)
+          // Validaciones mínimas
+          if (!formData.nombre || !formData.apellido || !formData.correo) {
+            alert("Faltan datos obligatorios (Nombre, Apellido, Correo)");
+            return;
+          }
+
           if (editId) {
+            // Editar usuario existente
             await userService.update(editId, formData);
             alert("Usuario actualizado en BD ✅");
           } else {
-            alert("Por seguridad, crea usuarios desde el Registro.");
-            return;
+            // Crear usuario nuevo (Requiere contraseña)
+            if (!formData.contrasena) {
+                alert("Para crear un usuario necesitas una contraseña.");
+                return;
+            }
+            await userService.create(formData);
+            alert("Usuario creado en BD ✅");
           }
       }
       
@@ -129,58 +139,81 @@ const AdminPage: React.FC = () => {
         <button className={`btn ${modo === "categorias" ? "btn-hero" : "btn-outline-light"}`} onClick={() => {setModo("categorias"); resetForm();}}>Categorías</button>
       </div>
 
-      {/* TABLA USUARIOS (BD REAL) */}
+      {/* SECCIÓN USUARIOS */}
       {modo === "usuarios" && (
         <div className="table-responsive mb-5">
-        <table className="table table-dark border-success align-middle">
-            <thead>
-            <tr className="text-neon-green">
-                <th>ID</th><th>Nombre</th><th>Email</th><th>Rol</th><th>Acciones</th>
-            </tr>
-            </thead>
-            <tbody>
-            {usuarios.map((u) => (
-                <tr key={u.id}>
-                <td>{u.id}</td>
-                <td>{u.nombre} {u.apellido}</td>
-                <td>{u.correo}</td>
-                <td><span className={`badge ${u.rol === 'ADMIN' ? 'bg-warning text-dark' : 'bg-secondary'}`}>{u.rol}</span></td>
-                <td>
-                    <button className="btn btn-sm btn-info me-2" onClick={() => cargarParaEditar(u)}>✏️</button>
-                    <button className="btn btn-sm btn-danger" onClick={() => eliminar(u.id)}>🗑️</button>
-                </td>
-                </tr>
-            ))}
-            </tbody>
-        </table>
-        
-        {/* Formulario básico para editar usuario */}
-        {editId && (
-           <div className="card bg-dark border-warning p-4 mt-3">
-             <h4 className="text-warning">Editar Usuario (ID: {editId})</h4>
-             <div className="row g-3">
-               <div className="col-md-6"><label>Nombre</label><input name="nombre" className="form-control" value={formData.nombre || ""} onChange={handleChange} /></div>
-               <div className="col-md-6"><label>Apellido</label><input name="apellido" className="form-control" value={formData.apellido || ""} onChange={handleChange} /></div>
-               <div className="col-md-6"><label>Email</label><input name="correo" className="form-control" value={formData.correo || ""} onChange={handleChange} /></div>
-               <div className="col-md-6"><label>Rol</label>
-                 <select name="rol" className="form-select" value={formData.rol || "CLIENTE"} onChange={handleChange}>
-                   <option value="CLIENTE">CLIENTE</option>
-                   <option value="ADMIN">ADMIN</option>
-                 </select>
-               </div>
-               <div className="col-12 mt-3 d-flex gap-2">
-                 <button className="btn btn-warning" onClick={guardarDatos}>Actualizar Usuario</button>
-                 <button className="btn btn-secondary" onClick={resetForm}>Cancelar</button>
-               </div>
-             </div>
-           </div>
-        )}
+          {/* Tabla de Usuarios */}
+          <table className="table table-dark border-success align-middle">
+              <thead>
+              <tr className="text-neon-green">
+                  <th>ID</th><th>Nombre</th><th>Email</th><th>Rol</th><th>Acciones</th>
+              </tr>
+              </thead>
+              <tbody>
+              {usuarios.map((u) => (
+                  <tr key={u.id}>
+                  <td>{u.id}</td>
+                  <td>{u.nombre} {u.apellido}</td>
+                  <td>{u.correo}</td>
+                  <td><span className={`badge ${u.rol === 'ADMIN' ? 'bg-warning text-dark' : 'bg-secondary'}`}>{u.rol}</span></td>
+                  <td>
+                      <button className="btn btn-sm btn-info me-2" onClick={() => cargarParaEditar(u)}>✏️</button>
+                      <button className="btn btn-sm btn-danger" onClick={() => eliminar(u.id)}>🗑️</button>
+                  </td>
+                  </tr>
+              ))}
+              </tbody>
+          </table>
+          
+          {/* Formulario Usuarios (Crear y Editar) */}
+          <div className="card bg-dark border-success p-4 mt-3">
+            <h4 className="text-neon-green">{editId ? `Editar Usuario (ID: ${editId})` : "Nuevo Usuario"}</h4>
+            <div className="row g-3">
+              <div className="col-md-6">
+                <label>Nombre</label>
+                <input name="nombre" className="form-control" value={formData.nombre || ""} onChange={handleChange} />
+              </div>
+              <div className="col-md-6">
+                <label>Apellido</label>
+                <input name="apellido" className="form-control" value={formData.apellido || ""} onChange={handleChange} />
+              </div>
+              <div className="col-md-6">
+                <label>Email (Correo)</label>
+                <input name="correo" className="form-control" value={formData.correo || ""} onChange={handleChange} />
+              </div>
+              
+              {/* Campo contraseña: obligatorio al crear, opcional al editar */}
+              <div className="col-md-6">
+                <label>Contraseña {editId && <span className="text-muted small">(Dejar en blanco para no cambiar)</span>}</label>
+                <input name="contrasena" type="password" className="form-control" value={formData.contrasena || ""} onChange={handleChange} />
+              </div>
+
+              <div className="col-md-6">
+                <label>Rol</label>
+                <select name="rol" className="form-select" value={formData.rol || "CLIENTE"} onChange={handleChange}>
+                  <option value="CLIENTE">CLIENTE</option>
+                  <option value="ADMIN">ADMIN</option>
+                </select>
+              </div>
+              
+              <div className="col-md-6">
+                <label>Teléfono</label>
+                <input name="telefono" className="form-control" value={formData.telefono || ""} onChange={handleChange} />
+              </div>
+
+              <div className="col-12 mt-3 d-flex gap-2">
+                <button className="btn btn-hero w-100" onClick={guardarDatos}>
+                  {editId ? "Actualizar Usuario" : "Crear Usuario"}
+                </button>
+                {editId && <button className="btn btn-secondary w-100" onClick={resetForm}>Cancelar Edición</button>}
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
-      {/* TABLA PRODUCTOS */}
+      {/* SECCIÓN PRODUCTOS */}
       {modo === "productos" && (
-        // ... (Misma lógica de tabla productos que ya tenías, solo asegúrate de usar editId en lugar de index)
         <div className="table-responsive mb-5">
           <table className="table table-dark border-success align-middle">
             <thead>
@@ -203,7 +236,7 @@ const AdminPage: React.FC = () => {
             </tbody>
           </table>
           
-          {/* Formulario Productos (Mismo que tenías, conectado a guardarDatos) */}
+          {/* Formulario Productos */}
           <div className="card bg-dark border-success p-4">
             <h3 className="text-neon-green mb-3">{editId ? "Editar" : "Nuevo"} Producto</h3>
             <div className="row g-3">
@@ -224,7 +257,7 @@ const AdminPage: React.FC = () => {
         </div>
       )}
 
-      {/* TABLA CATEGORÍAS */}
+      {/* SECCIÓN CATEGORÍAS */}
       {modo === "categorias" && (
         <div className="table-responsive mb-5">
           <table className="table table-dark border-success">

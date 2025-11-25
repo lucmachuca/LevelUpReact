@@ -11,7 +11,12 @@ export const userService = {
     return response.data;
   },
 
-  // Usamos PUT para editar (el endpoint del backend es /api/usuarios/{id})
+  // ✅ Función nueva para crear usuarios desde admin
+  create: async (usuarioData: any) => {
+    const response = await api.post('/usuarios', usuarioData);
+    return response.data;
+  },
+
   update: async (id: number, usuarioData: any) => {
     const response = await api.put(`/usuarios/${id}`, usuarioData);
     return response.data;
