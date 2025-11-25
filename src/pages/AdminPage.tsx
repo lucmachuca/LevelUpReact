@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { productService } from "../services/ProductService";
-import { userService } from "../services/UserService"; // ✅ Importamos el servicio de usuarios
+import { userService } from "../services/UserService";
 import type { Producto } from "../context/CarritoContext";
+import { REGIONES_COMUNAS } from "../data/comunasPorRegion";
 
 const AdminPage: React.FC = () => {
   const [modo, setModo] = useState<"usuarios" | "productos" | "categorias">("usuarios");
@@ -11,7 +12,7 @@ const AdminPage: React.FC = () => {
   const [categorias, setCategorias] = useState<any[]>([]); 
 
   const [formData, setFormData] = useState<any>({});
-  const [editId, setEditId] = useState<number | null>(null); // Usamos ID real
+  const [editId, setEditId] = useState<number | null>(null); 
 
   useEffect(() => {
     cargarDatos();
@@ -19,15 +20,12 @@ const AdminPage: React.FC = () => {
 
   const cargarDatos = async () => {
     try {
-      // 1. Productos (BD)
       const dataProds = await productService.getAll();
       setProductos(dataProds);
 
-      // 2. Categorías (BD)
       const dataCats = await productService.getCategorias();
       setCategorias(dataCats);
 
-      // 3. Usuarios (BD Real) ✅
       const dataUsers = await userService.getAll();
       setUsuarios(dataUsers);
       
@@ -64,13 +62,11 @@ const AdminPage: React.FC = () => {
         if (!formData.nombreCategoria) return;
         
         if (editId) {
-           // ✅ Editar categoría
            await productService.updateCategoria(editId, {
              nombreCategoria: formData.nombreCategoria,
              descripcionCategoria: formData.descripcionCategoria
            });
         } else {
-           // ✅ Crear categoría
            await productService.createCategoria({ 
              nombreCategoria: formData.nombreCategoria, 
              descripcionCategoria: formData.descripcionCategoria || "" 
@@ -79,18 +75,15 @@ const AdminPage: React.FC = () => {
         alert("Categoría guardada ✅");
       }
       else if (modo === "usuarios") {
-          // Validaciones mínimas
           if (!formData.nombre || !formData.apellido || !formData.correo) {
             alert("Faltan datos obligatorios (Nombre, Apellido, Correo)");
             return;
           }
 
           if (editId) {
-            // Editar usuario existente
             await userService.update(editId, formData);
             alert("Usuario actualizado en BD ✅");
           } else {
-            // Crear usuario nuevo (Requiere contraseña)
             if (!formData.contrasena) {
                 alert("Para crear un usuario necesitas una contraseña.");
                 return;
@@ -114,7 +107,7 @@ const AdminPage: React.FC = () => {
     try {
       if (modo === "productos") await productService.delete(id);
       if (modo === "categorias") await productService.deleteCategoria(id);
-      if (modo === "usuarios") await userService.delete(id); // ✅ Eliminación real
+      if (modo === "usuarios") await userService.delete(id); 
       
       cargarDatos();
     } catch (error) {
@@ -125,7 +118,7 @@ const AdminPage: React.FC = () => {
 
   const cargarParaEditar = (item: any) => {
     setFormData(item);
-    setEditId(item.id); // Usamos el ID real de la base de datos
+    setEditId(item.id);
   };
 
   return (
@@ -141,7 +134,6 @@ const AdminPage: React.FC = () => {
       {/* SECCIÓN USUARIOS */}
       {modo === "usuarios" && (
         <div className="table-responsive mb-5">
-          {/* Tabla de Usuarios */}
           <table className="table table-dark border-success align-middle">
               <thead>
               <tr className="text-neon-green">
@@ -164,7 +156,7 @@ const AdminPage: React.FC = () => {
               </tbody>
           </table>
           
-          {/* Formulario Usuarios (Crear y Editar) */}
+          {/* Formulario Usuarios */}
           <div className="card bg-dark border-success p-4 mt-3">
             <h4 className="text-neon-green">{editId ? `Editar Usuario (ID: ${editId})` : "Nuevo Usuario"}</h4>
             <div className="row g-3">
@@ -181,22 +173,15 @@ const AdminPage: React.FC = () => {
                 <input name="correo" className="form-control" value={formData.correo || ""} onChange={handleChange} />
               </div>
 
-              {/* ✅ NUEVO CAMPO: Fecha de Nacimiento */}
-              <div className="col-md-6">
-                <label>Fecha de Nacimiento</label>
-                <input 
-                  type="date" 
-                  name="fechaNacimiento" 
-                  className="form-control" 
-                  value={formData.fechaNacimiento || ""} 
-                  onChange={handleChange} 
-                />
-              </div>
-              
-              {/* Campo contraseña: obligatorio al crear, opcional al editar */}
+              {/* Campo contraseña */}
               <div className="col-md-6">
                 <label>Contraseña {editId && <span className="text-muted small">(Dejar en blanco para no cambiar)</span>}</label>
                 <input name="contrasena" type="password" className="form-control" value={formData.contrasena || ""} onChange={handleChange} />
+              </div>
+
+              <div className="col-md-6">
+                <label>Fecha de Nacimiento</label>
+                <input type="date" name="fechaNacimiento" className="form-control" value={formData.fechaNacimiento || ""} onChange={handleChange} />
               </div>
 
               <div className="col-md-6">
@@ -210,6 +195,33 @@ const AdminPage: React.FC = () => {
               <div className="col-md-6">
                 <label>Teléfono</label>
                 <input name="telefono" className="form-control" value={formData.telefono || ""} onChange={handleChange} />
+              </div>
+
+              {/* Campos Región y Comuna */}
+              <div className="col-md-6">
+                <label>Región</label>
+                <select 
+                  name="region" 
+                  className="form-select" 
+                  value={formData.region || ""} 
+                  onChange={(e) => setFormData({ ...formData, region: e.target.value, comuna: "" })}
+                >
+                  <option value="">Selecciona...</option>
+                  {Object.keys(REGIONES_COMUNAS).map(r => <option key={r} value={r}>{r}</option>)}
+                </select>
+              </div>
+              <div className="col-md-6">
+                <label>Comuna</label>
+                <select 
+                  name="comuna" 
+                  className="form-select" 
+                  value={formData.comuna || ""} 
+                  onChange={handleChange} 
+                  disabled={!formData.region}
+                >
+                  <option value="">Selecciona...</option>
+                  {formData.region && REGIONES_COMUNAS[formData.region]?.map((c: string) => <option key={c} value={c}>{c}</option>)}
+                </select>
               </div>
 
               <div className="col-12 mt-3 d-flex gap-2">
@@ -254,6 +266,7 @@ const AdminPage: React.FC = () => {
                 <div className="col-md-6"><label>Nombre</label><input name="nombreProducto" className="form-control" value={formData.nombreProducto || ""} onChange={handleChange} /></div>
                 <div className="col-md-3"><label>Precio</label><input type="number" name="precioProducto" className="form-control" value={formData.precioProducto || ""} onChange={handleChange} /></div>
                 <div className="col-md-3"><label>Stock</label><input type="number" name="cantidadDisponible" className="form-control" value={formData.cantidadDisponible || ""} onChange={handleChange} /></div>
+                
                 <div className="col-md-6"><label>Categoría</label>
                   <select name="categoriaId" className="form-select" value={formData.categoriaId || ""} onChange={handleChange}>
                     <option value="">Selecciona...</option>
@@ -261,6 +274,13 @@ const AdminPage: React.FC = () => {
                   </select>
                 </div>
                 <div className="col-md-6"><label>Imagen URL</label><input name="imagenUrl" className="form-control" value={formData.imagenUrl || ""} onChange={handleChange} /></div>
+                
+                {/* Campo Descripción Agregado */}
+                <div className="col-12">
+                    <label>Descripción</label>
+                    <textarea name="descripcionProducto" className="form-control" rows={3} value={formData.descripcionProducto || ""} onChange={handleChange} />
+                </div>
+
                 <div className="col-12"><button className="btn btn-hero w-100 mt-3" onClick={guardarDatos}>Guardar</button></div>
                 {editId && <div className="col-12"><button className="btn btn-secondary w-100" onClick={resetForm}>Cancelar</button></div>}
             </div>

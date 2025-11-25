@@ -4,21 +4,33 @@ import api from "../services/api";
 
 const PerfilUsuarioPage: React.FC = () => {
   const { usuario } = useAuth();
-  const [datosCompletos, setDatosCompletos] = useState<any>(null);
+  const [datosApi, setDatosApi] = useState<any>(null);
 
   useEffect(() => {
     if (usuario?.id) {
-      // Obtenemos datos frescos de la BD
       api.get(`/usuarios/${usuario.id}`)
-        .then(res => setDatosCompletos(res.data))
+        .then(res => setDatosApi(res.data))
         .catch(err => console.error("Error cargando datos del perfil", err));
     }
   }, [usuario]);
 
   if (!usuario) return <div className="text-center text-light py-5">Cargando perfil...</div>;
 
-  // Usamos los datos frescos si existen, si no, los del contexto
-  const user = datosCompletos || usuario;
+  // ✅ ESTRATEGIA DE FUSIÓN DE DATOS (SOLUCIÓN AL PROBLEMA)
+  // Priorizamos los datos frescos de la API (datosApi).
+  // Si aún no cargan, usamos los del Contexto (usuario).
+  // Normalizamos 'correo' vs 'email' aquí mismo.
+  const perfil = {
+    nombre: datosApi?.nombre || usuario.nombre,
+    apellido: datosApi?.apellido || (usuario as any).apellido || "", // Casteo por si no está en la interfaz del context
+    // 👇 AQUÍ ESTABA EL ERROR PRINCIPAL:
+    correo: datosApi?.correo || usuario.email || "Correo no disponible", 
+    telefono: datosApi?.telefono || (usuario as any).telefono,
+    region: datosApi?.region || (usuario as any).region,
+    comuna: datosApi?.comuna || (usuario as any).comuna,
+    fechaNacimiento: datosApi?.fechaNacimiento || (usuario as any).fechaNacimiento,
+    rol: datosApi?.rol || usuario.rol
+  };
 
   return (
     <section className="page-wrapper container py-5 text-light">
@@ -36,40 +48,47 @@ const PerfilUsuarioPage: React.FC = () => {
                 {/* Nombre */}
                 <div className="col-md-6">
                   <small className="text-muted d-block mb-1">Nombre Completo</small>
-                  <p className="fs-5 fw-bold mb-0">{user.nombre} {user.apellido}</p>
+                  <p className="fs-5 fw-bold mb-0 text-white">
+                    {perfil.nombre} {perfil.apellido}
+                  </p>
                 </div>
 
-                {/* Correo */}
+                {/* Correo - Ahora debería verse correctamente */}
                 <div className="col-md-6">
                   <small className="text-muted d-block mb-1">Correo Electrónico</small>
-                  <p className="fs-5 fw-bold mb-0">{user.correo}</p>
+                  <p className="fs-5 fw-bold mb-0 text-white">{perfil.correo}</p>
                 </div>
 
                 {/* Ubicación */}
                 <div className="col-md-6">
                   <small className="text-muted d-block mb-1">Ubicación</small>
-                  <p className="fs-5 mb-0">
-                    {user.comuna || "Sin comuna"}, {user.region || "Sin región"}
+                  <p className="fs-5 mb-0 text-white">
+                    {perfil.comuna ? `${perfil.comuna}, ` : "Sin comuna, "} 
+                    {perfil.region || "Sin región"}
                   </p>
                 </div>
 
                 {/* Teléfono */}
                 <div className="col-md-6">
                   <small className="text-muted d-block mb-1">Teléfono</small>
-                  <p className="fs-5 mb-0">{user.telefono || "No registrado"}</p>
+                  <p className="fs-5 mb-0 text-white">
+                    {perfil.telefono || "No registrado"}
+                  </p>
                 </div>
 
                 {/* Fecha Nacimiento */}
                 <div className="col-md-6">
                   <small className="text-muted d-block mb-1">Fecha de Nacimiento</small>
-                  <p className="fs-5 mb-0">{user.fechaNacimiento || "No registrada"}</p>
+                  <p className="fs-5 mb-0 text-white">
+                    {perfil.fechaNacimiento || "No registrada"}
+                  </p>
                 </div>
 
                 {/* Rol */}
                 <div className="col-md-6">
                   <small className="text-muted d-block mb-1">Tipo de Cuenta</small>
-                  <span className={`badge ${user.rol === 'ADMIN' ? 'bg-warning text-dark' : 'bg-success'}`}>
-                    {user.rol}
+                  <span className={`badge ${perfil.rol === 'ADMIN' ? 'bg-warning text-dark' : 'bg-success'}`}>
+                    {perfil.rol}
                   </span>
                 </div>
               </div>
